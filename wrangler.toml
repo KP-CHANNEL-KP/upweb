@@ -1,7 +1,0 @@
-name = "kponly-upweb" # သင်၏ project အမည်
-main = ".open-next/worker.js" # Next.js အတွက် လိုအပ်သော path
-compatibility_date = "2026-06-04" # ယနေ့ရက်စွဲ
-
-[[kv_namespaces]]
-binding = "KV" # ဤနာမည်ကိုပဲ code ထဲမှာ သုံးရပါမည် (process.env.KV)
-id = "910685107f8744fc877e16e8511651da" # Cloudflare Dashboard မှ ရလာသော ID
