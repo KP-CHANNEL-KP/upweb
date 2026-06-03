@@ -230,3 +230,120 @@ footer {
     font-size: 2.2em;
   }
 }
+
+######## buy #########
+
+:root {
+    --primary: #00ff9d;
+    --primary-dark: #00cc7a;
+    --bg: #0d0d1f;
+    --card: rgba(20, 25, 50, 0.78);
+    --text: #e0e0ff;
+    --border: rgba(0, 255, 157, 0.3);
+    --price: #ff3b5c;
+}
+
+body {
+    background: linear-gradient(135deg, #0d0d1f 0%, #1a1a2e 100%);
+    color: var(--text);
+    min-height: 100vh;
+    margin: 0;
+}
+
+.buy-page-main {
+    margin-top: 100px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #00ff9d, #00ccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.3em;
+    color: #aaa;
+    margin-bottom: 50px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: var(--card);
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary), #ff3b5c);
+}
+
+.product-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 50px rgba(0,255,157,0.3);
+    border-color: var(--primary);
+}
+
+.icon-circle {
+    width: 90px;
+    height: 90px;
+    background: rgba(0,255,157,0.15);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    margin: 0 auto 20px;
+}
+
+.price {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--price);
+    text-align: center;
+    margin: 20px 0;
+}
+
+.buy-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-tel { background: #25d366; color: white; }
+.btn-tg { background: #0088cc; color: white; }
+.btn-free { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: white; }
+.btn:hover { transform: translateY(-3px); }
