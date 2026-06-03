@@ -429,3 +429,28 @@ h1 {
 @media (max-width: 768px) {
     .post-number { font-size: 2em; }
 }
+
+/* ======== free Section ======== */
+.free-main { margin-top: 100px; padding: 20px; max-width: 1000px; margin-inline: auto; }
+
+.main-textarea {
+    width: 100%; height: 450px; background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border); border-radius: 15px;
+    padding: 15px; color: #fff; resize: none;
+}
+
+.admin-input {
+    width: 100%; padding: 15px; border-radius: 15px; border: none;
+    background: rgba(0,0,0,0.4); color: #fff; margin-bottom: 10px;
+}
+
+.error-msg { color: #ff6b6b; margin-top: 10px; }
+
+.admin-panel { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+
+.btn {
+    background: var(--primary); color: #000; border: none; padding: 14px 28px;
+    border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
