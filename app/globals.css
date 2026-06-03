@@ -454,3 +454,35 @@ h1 {
 }
 
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/*======== topup Section ========*/
+.topup-container { max-width: 800px; margin: 100px auto; padding: 20px; }
+
+.login-box {
+    background: rgba(20,25,50,0.9);
+    padding: 40px; border-radius: 20px; border: 1px solid var(--border);
+    text-align: center; max-width: 420px; margin: 20vh auto;
+}
+
+.topup-header {
+    display: flex; align-items: center; gap: 15px;
+    background: rgba(10,10,30,0.98); padding: 15px; border-radius: 15px; margin-bottom: 20px;
+}
+
+.profile-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); }
+
+.input-field {
+    width: 100%; padding: 15px; margin: 10px 0;
+    background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+    border-radius: 15px; color: white;
+}
+
+.submit-btn {
+    width: 100%; padding: 20px; border-radius: 50px; border: none;
+    background: var(--primary); font-weight: bold; cursor: pointer;
+    margin-top: 20px;
+}
+
+.game-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+.game-card { padding: 15px; background: #1a1a2e; border-radius: 10px; cursor: pointer; text-align: center; }
+.game-card.active { border: 2px solid var(--primary); }

@@ -20,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/buy">Buy</a>
               <a href="/all">All</a>
               <a href="/chat">Chat Group</a>
+              <a href="/topup">Top Up</a>
             </nav>
           </div>
         </header>
