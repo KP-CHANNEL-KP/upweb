@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav>
               <a href="/">Home</a>
               <a href="/posts">Posts</a>
-              <a href="https://web.kpfree.ooguy.com/free">Free</a>
+              <a href="/free">Free</a>
               <a href="/buy">Buy</a>
               <a href="/all">All</a>
               <a href="/chat">Chat Group</a>
