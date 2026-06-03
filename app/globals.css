@@ -456,31 +456,20 @@ h1 {
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /*======== topup Section ========*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --p: #00ff9d;
-  --bg: #0d0d1f;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg), #1a1a2e);
+  background: linear-gradient(135deg, #0d0d1f, #1a1a2e);
   font-family: 'Pyidaungsu', sans-serif;
 }
 
-.glass-card {
-  background: rgba(20, 25, 50, 0.9);
+.login-box {
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(0, 255, 157, 0.3);
-}
-
-.game-card {
-  transition: 0.3s;
-  cursor: pointer;
-  background: rgba(10, 15, 35, 0.95);
-  border: 1px solid rgba(0, 255, 157, 0.3);
-}
-
-.game-card.active {
-  border-color: var(--p);
-  background: rgba(0, 255, 157, 0.12);
-  transform: translateY(-3px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
