@@ -2,13 +2,15 @@
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
 
-// Google API အတွက် Type သတ်မှတ်ချက်
-interface Window {
-  google: any;
+// Global Window interface ကို သီးသန့် သတ်မှတ်ခြင်း
+declare global {
+  interface Window {
+    google: any;
+  }
 }
 
 export default function TopUpPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{name: string, email: string, id: string, photo: string} | null>(null);
   const [banned, setBanned] = useState(false);
   const [isGoogleReady, setIsGoogleReady] = useState(false);
 
@@ -29,19 +31,15 @@ export default function TopUpPage() {
     } catch (e) { console.error("Ban check error:", e); }
   };
 
-  // Google Sign-in initialization
   useEffect(() => {
-    if (isGoogleReady && !user) {
-      const win = window as any;
-      if (win.google) {
-        win.google.accounts.id.initialize({
-          client_id: "745888739692-gq8h4f6tjcr35d7ttmce4vg6d03of5tp.apps.googleusercontent.com",
-          callback: handleCredentialResponse
-        });
-        win.google.accounts.id.renderButton(
-          document.getElementById("googleSignIn")!, 
-          { theme: "outline", size: "large" }
-        );
+    if (isGoogleReady && !user && window.google) {
+      window.google.accounts.id.initialize({
+        client_id: "745888739692-gq8h4f6tjcr35d7ttmce4vg6d03of5tp.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+      });
+      const signInDiv = document.getElementById("googleSignIn");
+      if (signInDiv) {
+        window.google.accounts.id.renderButton(signInDiv, { theme: "outline", size: "large" });
       }
     }
   }, [isGoogleReady, user]);
@@ -56,8 +54,6 @@ export default function TopUpPage() {
     <main className="min-h-screen bg-gray-950 text-white p-5 flex items-center justify-center">
       <Script 
         src="https://accounts.google.com/gsi/client" 
-        async 
-        defer 
         onLoad={() => setIsGoogleReady(true)}
       />
 
@@ -69,12 +65,7 @@ export default function TopUpPage() {
       ) : (
         <div className="w-full max-w-2xl bg-slate-900 p-8 rounded-3xl border border-green-500/20">
           <header className="flex items-center gap-4 mb-8">
-            <img 
-              src={user.photo} 
-              className="w-16 h-16 rounded-full border-2 border-green-400" 
-              alt="Profile"
-              referrerPolicy="no-referrer"
-            />
+            <img src={user.photo} className="w-16 h-16 rounded-full border-2 border-green-400" alt="Profile" referrerPolicy="no-referrer" />
             <div>
               <h2 className="text-xl font-bold text-green-400">{user.name}</h2>
               <p className="text-gray-400">{user.email}</p>
