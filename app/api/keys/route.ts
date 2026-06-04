@@ -1,3 +1,5 @@
+/// <reference types="@cloudflare/workers-types" />
+
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 
