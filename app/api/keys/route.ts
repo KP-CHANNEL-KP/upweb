@@ -1,39 +1,51 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
-  const kv = (process.env as any).KV;
-  
-  // KV Namespace မချိတ်ထားမိရင် Error တက်နိုင်လို့ Check လုပ်ပါ
+// Cloudflare KV Binding ကို type-safe ဖြစ်အောင် လုပ်ခြင်း
+interface Env {
+  KV: KVNamespace;
+  ADMIN_PASSWORD: string;
+}
+
+export async function GET(request: Request) {
+  // context ထဲကနေ env ကို ခေါ်သုံးခြင်း (Next.js on Cloudflare အတွက် ပိုမှန်ကန်သည်)
+  const env = (process.env as unknown) as Env;
+  const kv = env.KV;
+
   if (!kv) {
     return NextResponse.json({ error: 'KV Namespace not bound' }, { status: 500 });
   }
 
-  const list = await kv.list();
-  
-  const keys = await Promise.all(list.keys.map(async (k: any) => {
-    const value = await kv.get(k.name);
-    return {
-      id: k.name,
-      name: k.name,
-      key: value
-    };
-  }));
-  
-  return NextResponse.json(keys);
+  try {
+    const list = await kv.list();
+    // Promise.all နဲ့ Data ဆွဲတာ မှန်ပါတယ်၊ Key တွေအများကြီးရှိရင်တော့ limit ထားဖို့လိုပါတယ်
+    const keys = await Promise.all(
+      list.keys.map(async (k: any) => ({
+        name: k.name,
+        key: (await kv.get(k.name)) || ""
+      }))
+    );
+    return NextResponse.json(keys);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch keys' }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
   try {
     const { name, key, password } = await req.json();
-    
-    // Password ကို Environment Variable ကနေ ခေါ်သုံးပါ (ပိုလုံခြုံတယ်)
-    // Cloudflare Dashboard > Settings > Environment Variables မှာ ထည့်ထားပါ
-    if (password !== process.env.ADMIN_PASSWORD) {
+    const env = (process.env as unknown) as Env;
+
+    // Environment Variable ထဲက Password နဲ့ တိုက်စစ်
+    if (password !== env.ADMIN_PASSWORD) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const kv = (process.env as any).KV;
+    if (!name || !key) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    }
+
+    const kv = env.KV;
     await kv.put(name, key);
     
     return NextResponse.json({ success: true });
