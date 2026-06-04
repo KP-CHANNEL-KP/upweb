@@ -2,18 +2,22 @@
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
 
+// Google API အတွက် Type သတ်မှတ်ချက်
+interface Window {
+  google: any;
+}
+
 export default function TopUpPage() {
   const [user, setUser] = useState<any>(null);
   const [banned, setBanned] = useState(false);
+  const [isGoogleReady, setIsGoogleReady] = useState(false);
 
-  // Google Sign-in Handler
   const handleCredentialResponse = async (response: any) => {
     const base64Url = response.credential.split('.')[1];
     const payload = JSON.parse(window.atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')));
     
     const userData = { name: payload.name, email: payload.email, id: payload.sub, photo: payload.picture };
     
-    // Ban Check
     try {
       const res = await fetch(`https://salebotban.kponly.ggff.net/check-ban/${userData.id}`);
       const data = await res.json();
@@ -22,15 +26,14 @@ export default function TopUpPage() {
         return;
       }
       setUser(userData);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Ban check error:", e); }
   };
 
+  // Google Sign-in initialization
   useEffect(() => {
-    // Google API ကို load လုပ်ပြီးမှ render လုပ်ရန်
-    const checkGoogle = setInterval(() => {
-      // TypeScript error မတက်စေရန် (window as any) ကိုသုံးပါ
+    if (isGoogleReady && !user) {
       const win = window as any;
-      if (win.google && document.getElementById("googleSignIn")) {
+      if (win.google) {
         win.google.accounts.id.initialize({
           client_id: "745888739692-gq8h4f6tjcr35d7ttmce4vg6d03of5tp.apps.googleusercontent.com",
           callback: handleCredentialResponse
@@ -39,12 +42,9 @@ export default function TopUpPage() {
           document.getElementById("googleSignIn")!, 
           { theme: "outline", size: "large" }
         );
-        clearInterval(checkGoogle);
       }
-    }, 500);
-
-    return () => clearInterval(checkGoogle);
-  }, []);
+    }
+  }, [isGoogleReady, user]);
 
   if (banned) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950 text-red-500">
@@ -54,7 +54,12 @@ export default function TopUpPage() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-5 flex items-center justify-center">
-      <Script src="https://accounts.google.com/gsi/client" async defer />
+      <Script 
+        src="https://accounts.google.com/gsi/client" 
+        async 
+        defer 
+        onLoad={() => setIsGoogleReady(true)}
+      />
 
       {!user ? (
         <div className="bg-slate-900/90 p-10 rounded-3xl border border-green-500/30 text-center shadow-2xl w-full max-w-sm">
@@ -64,7 +69,12 @@ export default function TopUpPage() {
       ) : (
         <div className="w-full max-w-2xl bg-slate-900 p-8 rounded-3xl border border-green-500/20">
           <header className="flex items-center gap-4 mb-8">
-            <img src={user.photo} className="w-16 h-16 rounded-full border-2 border-green-400" alt="Profile" />
+            <img 
+              src={user.photo} 
+              className="w-16 h-16 rounded-full border-2 border-green-400" 
+              alt="Profile"
+              referrerPolicy="no-referrer"
+            />
             <div>
               <h2 className="text-xl font-bold text-green-400">{user.name}</h2>
               <p className="text-gray-400">{user.email}</p>
