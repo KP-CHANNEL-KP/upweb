@@ -1,5 +1,7 @@
 /* app/globals.css */
 
+@import "tailwindcss";
+
 :root {
   --primary: #00ff9d;
   --primary-dark: #00cc7a;
