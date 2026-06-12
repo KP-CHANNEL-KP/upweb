@@ -27,9 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <nav className="flex flex-wrap justify-center gap-4 text-sm md:text-base">
                   {[
                     { name: 'Home', href: '/' },
-                    { name: 'Posts', href: '/posts' },
-                    { name: 'Free', href: '/free' },
-                    { name: 'VPN', href: '/vpn' },
+                    { name: 'Outline Keys', href: '/posts' },
+                    { name: 'V2ray Keys', href: '/free' },
+                    { name: 'VPN Files', href: '/vpn' },
                     { name: 'Buy', href: '/buy' },
                     { name: 'Top Up', href: '/topup' },
                   ].map((item) => (

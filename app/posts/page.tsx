@@ -48,7 +48,7 @@ export default function PostsPage() {
     <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
       <Toaster position="top-center" />
       <div className="max-w-2xl w-full">
-        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">နောက်ဆုံး ပို့စ်များ</h1>
+        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">Outline free Keys များသည် free ဖြစ်သောကြောင့် အချိတ်မရွေး Admin မှ ပြန်ပိတ်နိုင်သည်။</h1>
 
         {!isVerified ? (
           <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
