@@ -10,11 +10,11 @@ export default function PostsPage() {
   const [message, setMessage] = useState('');
 
   const posts = [
-    { num: "၀၁", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp6dXo3eWU2Z3hpdzU5Mngy@104.207.77.150:31828?type=tcp#KP OUTLINE FREE 1" },
-    { num: "၀၂", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTowMzI1M3Q1dmJrN2NkbjJm@104.207.77.150:31828?type=tcp#KP OUTLINE FREE 2" },
-    { num: "၀၃", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp3bW00NTUxdGRpNHQwMm1u@104.207.77.150:31828?type=tcp#KP OUTLINE FREE 3" },
-    { num: "၀၄", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp2MGYxM2U2cmM2Y3diMHZn@104.207.77.150:31828?type=tcp#KP OUTLINE FREE 4" },
-    { num: "၀၅", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpnMHFkeTVyOGU1bjBvNzY0@104.207.77.150:31828?type=tcp#KP OUTLINE FREE 5" },
+    { num: "၀၁", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpoMjc3end2MjloMjQxNHJ3@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 1" },
+    { num: "၀၂", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo5dDFpbHdhcnduOHBxMjM3@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 2" },
+    { num: "၀၃", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo5NnowdXE1NGlyMWxnbXk2@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 3" },
+    { num: "၀၄", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpwdnEwNjBiZ2QweTducDZ0@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 4" },
+    { num: "၀၅", title: "KP SHOP", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0YzRmcWl0NzJxNG4zMXd6@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 5" },
   ];
 
   const handleCopy = (desc: string) => {
