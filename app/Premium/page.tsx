@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 'use client';
 import { useState } from 'react';
 import { Crown, Check, Key, Loader2 } from 'lucide-react';
