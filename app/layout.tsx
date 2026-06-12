@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     { name: 'V2ray Keys', href: '/free' },
                     { name: 'VPN Files', href: '/vpn' },
                     { name: 'Buy', href: '/buy' },
-                    { name: 'Top Up', href: '/topup' },
+                    { name: 'My Account', href: '/topup' },
                   ].map((item) => (
                     <a key={item.name} href={item.href} className="hover:text-emerald-400 transition-colors">
                       {item.name}
