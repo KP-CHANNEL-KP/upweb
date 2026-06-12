@@ -1,4 +1,5 @@
 // app/api/create-key/route.ts
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 import https from 'https';
 
