@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
   const { userId, plan } = await req.json() as { userId: string; plan: string };
   const id = crypto.randomUUID();
