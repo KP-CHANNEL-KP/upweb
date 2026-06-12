@@ -20,8 +20,8 @@ export async function POST() {
     const response = await fetch(`${OUTLINE_API_URL}/access-keys`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      agent: httpsAgent, 
-    });
+      agent: httpsAgent,
+    } as RequestInit & { agent?: https.Agent });
 
     if (!response.ok) {
       throw new Error('Failed to connect to Outline server');
