@@ -23,9 +23,10 @@ export default function PremiumPage() {
     setLoading(true);
     try {
       const response = await fetch('/api/create-key', { method: 'POST' });
-      const data = await response.json();
+      // ဒီနေရာမှာ :any နဲ့ အစားထိုးလိုက်ရင် TypeScript error ပျောက်ပါလိမ့်မယ်
+      const data: any = await response.json(); 
       
-      if (data.accessUrl) {
+      if (data && data.accessUrl) {
         setResult(data);
         alert("အောင်မြင်စွာ Key ထုတ်ပြီးပါပြီ!");
       } else {
