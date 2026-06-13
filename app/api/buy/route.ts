@@ -1,15 +1,24 @@
-import { NextResponse } from 'next/server';
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const { userId, plan } = await req.json() as { userId: string; plan: string };
-  const id = crypto.randomUUID();
-  
-  // D1 Database ထဲသို့ ထည့်ခြင်း
-  await process.env.DB.prepare(
-    "INSERT INTO orders (id, user_id, plan, status) VALUES (?, ?, ?, ?)"
-  ).bind(id, userId, plan, 'pending').run();
+  try {
+    const body = await req.json() as { plan: string };
+    const { plan } = body;
 
-  return NextResponse.json({ id }); // ဒီ ID ကို Frontend က Noti Box မှာ သုံးမယ်
+    // Database ကို လုံးဝမသုံးဘဲ Mock Data ပြန်ပေးမယ်
+    const mockKey = "TEST-" + Math.random().toString(36).substring(7).toUpperCase();
+
+    return new Response(JSON.stringify({ 
+      id: "order_12345", 
+      message: "Success",
+      key: mockKey,
+      plan: plan
+    }), { 
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+  }
 }
