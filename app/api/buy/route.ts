@@ -2,14 +2,20 @@ export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as { plan: string };
-    const { plan } = body;
+    // ၁။ Body ရှိမရှိ စစ်ဆေးခြင်း
+    const body = await req.json().catch(() => null) as Record<string, any> | null;
+    if (!body || !('plan' in body)) {
+      return new Response(JSON.stringify({ error: "Invalid plan" }), { status: 400 });
+    }
 
-    // Database ကို လုံးဝမသုံးဘဲ Mock Data ပြန်ပေးမယ်
+    const { plan } = body as { plan: string };
+
+    // ၂။ Mock Key ဖန်တီးခြင်း
     const mockKey = "TEST-" + Math.random().toString(36).substring(7).toUpperCase();
 
+    // ၃။ အောင်မြင်ကြောင်း ပြန်ပေးခြင်း
     return new Response(JSON.stringify({ 
-      id: "order_12345", 
+      id: "order_" + Date.now(), // ID ကို အချိန်နဲ့အမျှ ပြောင်းသွားအောင် လုပ်ပေးလိုက်တယ်
       message: "Success",
       key: mockKey,
       plan: plan
@@ -19,6 +25,7 @@ export async function POST(req: Request) {
     });
 
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+    // ၄။ Error ဖြစ်ခဲ့ရင် ဘာကြောင့်လဲဆိုတာကို သိသာအောင် ထုတ်ပေးခြင်း
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500 });
   }
 }

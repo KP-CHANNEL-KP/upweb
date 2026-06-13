@@ -1,12 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react'; // useEffect ထည့်ထားတယ်
-import { Crown, Key, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function PremiumPage() {
-  const [selectedKey, setSelectedKey] = useState<any>(null); // Plan အပြည့်အစုံသိမ်းဖို့
+  const [selectedKey, setSelectedKey] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null); // Order ID သိမ်းဖို့
-  const [result, setResult] = useState<any>(null); // Key ရလာရင် သိမ်းဖို့
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null); // Error message ပြဖို့ state အသစ်
 
   const keys = [
     { name: '1 GB Plan', gb: 1, price: '50 MMK' },
@@ -16,34 +17,42 @@ export default function PremiumPage() {
     { name: '1000 GB Plan', gb: 1000, price: '50,000 MMK' },
   ];
 
-  // 1. Order တင်ခြင်း (API Route: /api/buy ကိုသုံးပါ)
   const handleCreateKey = async () => {
+    if (!selectedKey) return;
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch('/api/buy', { 
         method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, // Header ထည့်ပေးဖို့ မမေ့ပါနဲ့
         body: JSON.stringify({ plan: selectedKey.name }) 
       });
-      const data = (await response.json()) as { id: string };
-      setOrderId(data.id); // Database ID ရလာရင် စောင့်ကြည့်ဖို့ စတင်မယ်
+      
+      if (!response.ok) throw new Error("Server တုံ့ပြန်မှု မမှန်ကန်ပါ");
+      
+      const data: any = await response.json();
+      setOrderId(data.id);
     } catch (error) {
-      alert("Order တင်ရာတွင် အမှားဖြစ်ပွားနေပါသည်။");
+      setError("Order တင်ရာတွင် အမှားဖြစ်ပွားနေပါသည်။");
     } finally {
       setLoading(false);
     }
   };
 
-  // 2. Key ထွက်လာမလား ၃ စက္ကန့်တစ်ခါ စစ်ခြင်း (Polling)
   useEffect(() => {
     if (!orderId || result) return;
 
     const interval = setInterval(async () => {
-      const res = await fetch(`/api/check-status?id=${orderId}`);
-      const data: any = await res.json();
-      
-      if (data?.status === 'completed') {
-        setResult(data);
-        clearInterval(interval);
+      try {
+        const res = await fetch(`/api/check-status?id=${orderId}`);
+        const data: any = await res.json();
+
+        if (data?.status === 'completed') {
+          setResult(data);
+          clearInterval(interval);
+        }
+      } catch (e) {
+        console.error("Status စစ်ဆေးရာတွင် အမှားဖြစ်ပွားသည်");
       }
     }, 3000);
 
@@ -52,7 +61,9 @@ export default function PremiumPage() {
 
   return (
     <main className="min-h-screen bg-[#020617] text-gray-100 p-4 md:p-8">
-      {/* Plan Selection UI */}
+      {/* Error Message UI */}
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {keys.map((key, index) => (
           <div 
@@ -66,21 +77,19 @@ export default function PremiumPage() {
         ))}
       </div>
 
-      {/* Action Button */}
       <div className="mt-12 text-center">
         <button 
-          disabled={!selectedKey || loading || orderId !== null}
+          disabled={!selectedKey || loading || !!orderId}
           onClick={handleCreateKey}
-          className="bg-emerald-600 px-8 py-3 rounded-xl font-bold flex items-center gap-2 mx-auto"
+          className="bg-emerald-600 px-8 py-3 rounded-xl font-bold flex items-center gap-2 mx-auto disabled:bg-gray-600"
         >
-          {loading ? <Loader2 className="animate-spin" /> : orderId ? "Key ထုတ်ပေးနေသည်..." : "ငွေပေးချေမည်"}
+          {loading ? <Loader2 className="animate-spin" /> : orderId ? "Key စောင့်ဆိုင်းနေသည်..." : "ငွေပေးချေမည်"}
         </button>
         
-        {/* Result Box */}
         {result && (
-          <div className="mt-6 p-4 bg-emerald-900/20 border border-emerald-500 rounded-xl">
+          <div className="mt-6 p-4 bg-emerald-900/20 border border-emerald-500 rounded-xl max-w-lg mx-auto">
             <p className="text-emerald-400 font-bold">သင်၏ Key ရရှိပါပြီ:</p>
-            <code className="block bg-black p-2 mt-2 break-all">{result.access_url}</code>
+            <code className="block bg-black p-2 mt-2 break-all text-sm">{result.access_url}</code>
           </div>
         )}
       </div>
