@@ -9,23 +9,23 @@ export async function POST(req: Request) {
 
     const { plan } = body as { plan: string };
 
-    const API_KEY = "HJwkZ7wxI91jTmcr4oEDZQ";
-    const vpsUrl = `http://premium.kpchannel.cc.cd:22375/${API_KEY}/access-keys`;
+    // မင်းရရှိထားတဲ့ API URL အသစ်ကို ဒီမှာ အတိအကျ ထည့်ပါ
+    // ဥပမာ: https://104.207.76.252:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys
+    const vpsUrl = "https://104.207.76.252:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys";
 
-    // Outline API အတွက် အရေးကြီးဆုံးက Body ထဲမှာ Name ထည့်ပေးဖို့ပါ
     const response = await fetch(vpsUrl, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
       },
-      body: JSON.stringify({ 
-        name: `User_${Date.now()}` 
-      })
+      body: JSON.stringify({ name: `User_${Date.now()}` }),
+      // @ts-ignore
+      cf: {
+        // Outline ရဲ့ Self-signed certificate ကို လက်ခံပေးခြင်း
+        rejectUnauthorized: false
+      }
     });
 
-    // Cloudflare Edge ကနေ VPS ကို ခေါ်တဲ့အခါ ဖြစ်တတ်တဲ့ 520 error ကို ရှောင်ဖို့
-    // အကယ်၍ ဒီလိုနဲ့မှ မရရင် VPS Panel ထဲမှာ API ခေါ်ဆိုမှုတွေကို Log ကြည့်ရပါမယ်
     if (!response.ok) {
       const errorText = await response.text();
       return new Response(JSON.stringify({ 
@@ -40,7 +40,8 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ 
       id: "order_" + Date.now(),
       message: "Success",
-      access_url: vpsData.accessUrl || vpsData.access_url || "Failed",
+      // တရားဝင် Outline API က accessUrl ကို ပေးပါတယ်
+      access_url: vpsData.accessUrl || "Key generation failed",
       plan: plan
     }), { 
       status: 200,
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
   } catch (e) {
     return new Response(JSON.stringify({ 
       error: "Connection Failed",
-      details: String(e) 
+      details: e instanceof Error ? e.message : String(e)
     }), { status: 500 });
   }
 }
