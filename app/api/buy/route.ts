@@ -39,11 +39,11 @@ export async function POST(req: Request) {
     });
 
   } catch (e) {
-    // console.log နဲ့ အမှားကို ရိုက်ထုတ်ကြည့်ပါ
-    console.error("API Error Details:", e); 
-    return new Response(JSON.stringify({ 
-      error: e instanceof Error ? e.message : String(e),
-      details: "VPS connection failed" 
-    }), { status: 500 });
+  // error message ကို တိုက်ရိုက်ပြန်ပို့ပေးမယ်
+  const errorMessage = e instanceof Error ? e.message : String(e);
+  return new Response(JSON.stringify({ 
+    error: "Connection Error",
+    details: errorMessage 
+  }), { status: 500 });
   }
 }
