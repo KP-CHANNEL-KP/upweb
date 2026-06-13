@@ -9,20 +9,18 @@ export async function POST(req: Request) {
 
     const { plan } = body as { plan: string };
 
-    // မင်းရရှိထားတဲ့ API URL အသစ်ကို ဒီမှာ အတိအကျ ထည့်ပါ
-    // ဥပမာ: https://104.207.76.252:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys
     const vpsUrl = "https://104.207.76.252:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys";
 
     const response = await fetch(vpsUrl, {
       method: 'POST',
       headers: { 
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json' 
       },
       body: JSON.stringify({ name: `User_${Date.now()}` }),
+      // Cloudflare Worker အတွက် SSL/TLS စည်းမျဉ်းကို ကျော်ဖြတ်ခြင်း
       // @ts-ignore
       cf: {
-        // Outline ရဲ့ Self-signed certificate ကို လက်ခံပေးခြင်း
-        rejectUnauthorized: false
+        ssl_verify: false // ဒါက rejectUnauthorized: false ထက် ပိုပြီးထိရောက်ပါတယ်
       }
     });
 
@@ -40,7 +38,6 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ 
       id: "order_" + Date.now(),
       message: "Success",
-      // တရားဝင် Outline API က accessUrl ကို ပေးပါတယ်
       access_url: vpsData.accessUrl || "Key generation failed",
       plan: plan
     }), { 
