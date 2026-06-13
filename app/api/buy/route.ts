@@ -9,30 +9,38 @@ export async function POST(req: Request) {
 
     const { plan } = body as { plan: string };
 
-    // ၁။ VPS API ကို ခေါ်ယူခြင်း (Outline/Access Key ပုံစံ)
-    // မင်းရဲ့ Panel URL က https://premium.kpchannel.cc.cd:22375/HJwkZ7wxI91jTmcr4oEDZQ ဖြစ်တဲ့အတွက်
-    // access_keys endpoint ကို အသုံးပြုရပါမယ်။
-    const vpsUrl = "http://premium.kpchannel.cc.cd:22375/HJwkZ7wxI91jTmcr4oEDZQ/access-keys";
+    const API_KEY = "HJwkZ7wxI91jTmcr4oEDZQ";
+    const vpsUrl = `http://premium.kpchannel.cc.cd:22375/${API_KEY}/access-keys`;
 
+    // Outline API အတွက် အရေးကြီးဆုံးက Body ထဲမှာ Name ထည့်ပေးဖို့ပါ
     const response = await fetch(vpsUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ 
+        name: `User_${Date.now()}` 
+      })
     });
 
-    // VPS က ပေးတဲ့ raw text ကို အရင်ဖတ်မယ်
-    const errorText = await response.text(); 
-    
+    // Cloudflare Edge ကနေ VPS ကို ခေါ်တဲ့အခါ ဖြစ်တတ်တဲ့ 520 error ကို ရှောင်ဖို့
+    // အကယ်၍ ဒီလိုနဲ့မှ မရရင် VPS Panel ထဲမှာ API ခေါ်ဆိုမှုတွေကို Log ကြည့်ရပါမယ်
     if (!response.ok) {
-      throw new Error(`Status: ${response.status} | Body: ${errorText}`);
+      const errorText = await response.text();
+      return new Response(JSON.stringify({ 
+        error: "VPS Rejected", 
+        status: response.status,
+        details: errorText 
+      }), { status: 502 });
     }
 
-    const vpsData = await response.json() as Record<string, any> | null;
+    const vpsData = await response.json() as Record<string, any>;
 
-    // ၂။ VPS ကနေရလာတဲ့ Key ကို အောင်မြင်စွာ ပြန်ပို့ပေးခြင်း
     return new Response(JSON.stringify({ 
       id: "order_" + Date.now(),
       message: "Success",
-      access_url: (vpsData && (vpsData.accessUrl ?? vpsData.access_url)) || "Key generation failed", // VPS ကပေးတဲ့ URL
+      access_url: vpsData.accessUrl || vpsData.access_url || "Failed",
       plan: plan
     }), { 
       status: 200,
@@ -40,11 +48,9 @@ export async function POST(req: Request) {
     });
 
   } catch (e) {
-  // error message ကို တိုက်ရိုက်ပြန်ပို့ပေးမယ်
-  const errorMessage = e instanceof Error ? e.message : String(e);
-  return new Response(JSON.stringify({ 
-    error: "Connection Error",
-    details: errorMessage 
-  }), { status: 500 });
+    return new Response(JSON.stringify({ 
+      error: "Connection Failed",
+      details: String(e) 
+    }), { status: 500 });
   }
 }
