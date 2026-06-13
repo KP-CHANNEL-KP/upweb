@@ -12,17 +12,18 @@ export async function POST(req: Request) {
     // ၁။ VPS API ကို ခေါ်ယူခြင်း (Outline/Access Key ပုံစံ)
     // မင်းရဲ့ Panel URL က https://premium.kpchannel.cc.cd:22375/HJwkZ7wxI91jTmcr4oEDZQ ဖြစ်တဲ့အတွက်
     // access_keys endpoint ကို အသုံးပြုရပါမယ်။
-    const vpsUrl = "https://premium.kpchannel.cc.cd:22375/HJwkZ7wxI91jTmcr4oEDZQ/access-keys";
+    const vpsUrl = "http://premium.kpchannel.cc.cd:22375/HJwkZ7wxI91jTmcr4oEDZQ/access-keys";
 
     const response = await fetch(vpsUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
 
+    // VPS က ပေးတဲ့ raw text ကို အရင်ဖတ်မယ်
+    const errorText = await response.text(); 
+    
     if (!response.ok) {
-      throw new Error(`VPS API Error: ${response.statusText}`);
+      throw new Error(`Status: ${response.status} | Body: ${errorText}`);
     }
 
     const vpsData = await response.json() as Record<string, any> | null;
