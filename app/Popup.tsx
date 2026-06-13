@@ -20,6 +20,9 @@ export default function Popup() {
           <p>❄ 1 Month - 5000 Ks</p>
           <p>❄ 3 Months - 10000 Ks</p>
           <p>❄ 6 Months - 20000 Ks</p>
+          <p>❄ 1 GB - 50 Ks</p>
+          <p>❄ 10 GB - 500 Ks</p>
+          <p>❄ 100 GB - 5000 Ks</p>
         </div>
         <div className="space-y-3">
           <a href="https://t.me/KP_CHANNEL_KP" className="block bg-blue-600 py-2 rounded-xl font-bold text-white">Telegram Channel</a>
