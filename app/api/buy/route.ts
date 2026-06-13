@@ -2,7 +2,6 @@ export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
-    // ၁။ Body ရှိမရှိ စစ်ဆေးခြင်း
     const body = await req.json().catch(() => null) as Record<string, any> | null;
     if (!body || !('plan' in body)) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), { status: 400 });
@@ -10,14 +9,29 @@ export async function POST(req: Request) {
 
     const { plan } = body as { plan: string };
 
-    // ၂။ Mock Key ဖန်တီးခြင်း
-    const mockKey = "TEST-" + Math.random().toString(36).substring(7).toUpperCase();
+    // ၁။ VPS API ကို ခေါ်ယူခြင်း (Outline/Access Key ပုံစံ)
+    // မင်းရဲ့ Panel URL က https://104.207.76.252:22375/HJwkZ7wxI91jTmcr4oEDZQ ဖြစ်တဲ့အတွက်
+    // access_keys endpoint ကို အသုံးပြုရပါမယ်။
+    const vpsUrl = "https://104.207.76.252:22375/HJwkZ7wxI91jTmcr4oEDZQ/access-keys";
 
-    // ၃။ အောင်မြင်ကြောင်း ပြန်ပေးခြင်း
+    const response = await fetch(vpsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`VPS API Error: ${response.statusText}`);
+    }
+
+    const vpsData = await response.json() as Record<string, any> | null;
+
+    // ၂။ VPS ကနေရလာတဲ့ Key ကို အောင်မြင်စွာ ပြန်ပို့ပေးခြင်း
     return new Response(JSON.stringify({ 
-      id: "order_" + Date.now(), // ID ကို အချိန်နဲ့အမျှ ပြောင်းသွားအောင် လုပ်ပေးလိုက်တယ်
+      id: "order_" + Date.now(),
       message: "Success",
-      key: mockKey,
+      access_url: (vpsData && (vpsData.accessUrl ?? vpsData.access_url)) || "Key generation failed", // VPS ကပေးတဲ့ URL
       plan: plan
     }), { 
       status: 200,
@@ -25,7 +39,6 @@ export async function POST(req: Request) {
     });
 
   } catch (e) {
-    // ၄။ Error ဖြစ်ခဲ့ရင် ဘာကြောင့်လဲဆိုတာကို သိသာအောင် ထုတ်ပေးခြင်း
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500 });
   }
 }
