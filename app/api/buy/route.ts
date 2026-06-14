@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
   try {
-    // TypeScript အတွက် data type ကို အတိအလင်း သတ်မှတ်ပေးခြင်း
     const body = await req.json() as { plan: string };
     const { plan } = body;
 
