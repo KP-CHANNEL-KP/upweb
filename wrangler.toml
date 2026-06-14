@@ -5,7 +5,3 @@ main = "src/index.ts" # ဒါမှမဟုတ် မင်းရဲ့ code f
 binding = "DB"
 database_name = "my-db"
 database_id = "11285fbc-45a0-4be7-9e12-f642c610b2b2" # Cloudflare D1 က ယူပါ
-
-binding = "USER_DB"
-database_name = "user_db"
-database_id = "9f51ba13-c7ee-4f85-9b0b-2806673f7cb1"
