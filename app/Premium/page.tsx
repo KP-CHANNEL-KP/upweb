@@ -28,7 +28,8 @@ export default function PremiumPage() {
         body: JSON.stringify({ plan: selectedKey.name }) 
       });
       
-      const data = await response.json();
+      // ဒီနေရာမှာ : any ထည့်ပေးလိုက်တာပါ
+      const data: any = await response.json();
       
       if (!response.ok) throw new Error(data.error || "Order တင်ရာတွင် အမှားဖြစ်ပွားသည်");
       
