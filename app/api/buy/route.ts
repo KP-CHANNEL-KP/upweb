@@ -1,54 +1,28 @@
-export const runtime = 'edge';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
+  const { plan } = await req.json();
+  
+  // သင့် Telegram Bot details များ
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
+  const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+  // Plan အလိုက် command ကို mapping လုပ်ပါ
+  // ဥပမာ - Telegram မှာ /getkey 1 ဆိုတာမျိုး ပို့ချင်ရင်
+  const planCommand = plan === '1 GB Plan' ? '/getkey 1' : '/getkey 10'; // လိုအပ်သလို ထပ်ဖြည့်ပါ
+
   try {
-    const body = await req.json().catch(() => null) as Record<string, any> | null;
-    if (!body || !('plan' in body)) {
-      return new Response(JSON.stringify({ error: "Invalid plan" }), { status: 400 });
-    }
-
-    const { plan } = body as { plan: string };
-
-    const vpsUrl = "https://104.207.76.252:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys";
-
-    const response = await fetch(vpsUrl, {
+    // Telegram Bot ထံသို့ message ပို့ခြင်း
+    const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    await fetch(tgUrl, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json' 
-      },
-      body: JSON.stringify({ name: `User_${Date.now()}` }),
-      // Cloudflare Worker အတွက် SSL/TLS စည်းမျဉ်းကို ကျော်ဖြတ်ခြင်း
-      // @ts-ignore
-      cf: {
-        ssl_verify: false // ဒါက rejectUnauthorized: false ထက် ပိုပြီးထိရောက်ပါတယ်
-      }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: planCommand })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return new Response(JSON.stringify({ 
-        error: "VPS Rejected", 
-        status: response.status,
-        details: errorText 
-      }), { status: 502 });
-    }
-
-    const vpsData = await response.json() as Record<string, any>;
-
-    return new Response(JSON.stringify({ 
-      id: "order_" + Date.now(),
-      message: "Success",
-      access_url: vpsData.accessUrl || "Key generation failed",
-      plan: plan
-    }), { 
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-  } catch (e) {
-    return new Response(JSON.stringify({ 
-      error: "Connection Failed",
-      details: e instanceof Error ? e.message : String(e)
-    }), { status: 500 });
+    // အောင်မြင်ကြောင်း return ပြန်ပါ
+    return NextResponse.json({ id: Date.now().toString(), status: 'pending' });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to request key' }, { status: 500 });
   }
 }
