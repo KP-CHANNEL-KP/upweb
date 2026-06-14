@@ -19,11 +19,12 @@ export async function POST(req: Request) {
 
     // Database ထဲမှာ order_id ကို ရှာပြီး Key ထည့် + Status ပြောင်း
     // bind(key, orderId) သည် အစဉ်လိုက်အတိုင်းဖြစ်ရပါမည်
-    await db.prepare(
-      "UPDATE orders SET key = ?, status = 'completed' WHERE id = ?"
-    )
-    .bind(key, orderId)
-    .run();
+    // app/api/save-key/route.ts တွင် ပြင်ရန်
+await db.prepare(
+  "UPDATE orders SET access_url = ?, status = 'completed' WHERE id = ?"
+)
+.bind(key, orderId) // orderId သည် Database ရှိ id နှင့် data type တူရပါမည်
+.run();
 
     return NextResponse.json({ success: true, message: "Key updated successfully" });
   } catch (error) {
