@@ -2,16 +2,13 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
-  
-  if (!id) return NextResponse.json({ error: 'ID missing' }, { status: 400 });
+  const db = process.env.DB as any;
 
-  // D1 Database ကနေ Data လှမ်းယူ
-  const result = await process.env.DB.prepare(
-    "SELECT status, access_url FROM orders WHERE id = ?"
-  ).bind(id).first();
-  
-  return NextResponse.json(result);
+  const order = await db.prepare("SELECT * FROM orders WHERE id = ?")
+                        .bind(id).first();
+
+  return NextResponse.json(order);
 }
