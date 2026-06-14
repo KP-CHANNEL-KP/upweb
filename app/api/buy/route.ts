@@ -4,34 +4,35 @@ export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as { plan: string };
-    const { plan } = body;
+    const { plan } = await req.json() as { plan: string };
 
+    // D1 Database ကို ချိတ်ဆက်ခြင်း (env variable ကို wrangler.toml ထဲမှာ ထည့်ထားရပါမယ်)
+    // process.env.DB ဆိုသည်မှာ သင့် D1 database binding name ဖြစ်ပါသည်
+    const db = process.env.DB as any;
+
+    // Database ထဲသို့ အော်ဒါအသစ်ထည့်ခြင်း
+    const { results } = await db.prepare(
+      "INSERT INTO orders (plan, status) VALUES (?, ?) RETURNING id"
+    ).bind(plan, 'pending').run();
+
+    const orderId = results[0].id; // ရလာတဲ့ order id
+
+    // Telegram Bot ဆီသို့ Command ပို့ခြင်း
     const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
-    if (!BOT_TOKEN || !CHAT_ID) {
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-    }
-
-    // Plan အလိုက် command mapping (လိုအပ်ပါက အခြား plan များ ထပ်ထည့်နိုင်ပါတယ်)
     const planCommand = plan === '1 GB Plan' ? '/getkey 1' : '/getkey 10';
 
-    // Telegram Bot ထံသို့ message ပို့ခြင်း
-    const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    const response = await fetch(tgUrl, {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, text: planCommand })
+      body: JSON.stringify({ 
+        chat_id: CHAT_ID, 
+        text: `${planCommand} | order_id:${orderId}` // Bot က ဒီ ID ကို ပြန်ပို့ပေးရမယ်
+      })
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to send message to Telegram');
-    }
-
-    return NextResponse.json({ id: Date.now().toString(), status: 'pending' });
+    return NextResponse.json({ id: orderId, status: 'pending' });
   } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json({ error: 'Failed to request key' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process' }, { status: 500 });
   }
 }
