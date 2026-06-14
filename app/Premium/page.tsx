@@ -28,7 +28,6 @@ export default function PremiumPage() {
         body: JSON.stringify({ plan: selectedKey.name }) 
       });
       
-      // ဒီနေရာမှာ : any ထည့်ပေးလိုက်တာပါ
       const data: any = await response.json();
       
       if (!response.ok) throw new Error(data.error || "Order တင်ရာတွင် အမှားဖြစ်ပွားသည်");
@@ -47,7 +46,8 @@ export default function PremiumPage() {
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/check-status?id=${orderId}`);
-        const data = await res.json();
+        // ဒီနေရာမှာ : any ထည့်ပေးလိုက်တာပါ
+        const data: any = await res.json();
 
         if (data?.status === 'completed') {
           setResult(data);
@@ -69,7 +69,7 @@ export default function PremiumPage() {
         {keys.map((key, index) => (
           <div 
             key={index}
-            onClick={() => !orderId && setSelectedKey(key)} // order တင်နေရင် မနှိပ်နိုင်အောင်
+            onClick={() => !orderId && setSelectedKey(key)}
             className={`p-6 rounded-2xl border cursor-pointer transition-all ${selectedKey?.name === key.name ? 'bg-[#1e293b] border-yellow-500' : 'bg-[#0f172a] border-white/10 hover:border-white/30'}`}
           >
             <h2 className="text-xl font-bold">{key.name}</h2>
@@ -87,7 +87,7 @@ export default function PremiumPage() {
           {loading ? <Loader2 className="animate-spin" /> : orderId ? "Key စောင့်ဆိုင်းနေသည်..." : "ငွေပေးချေမည်"}
         </button>
         
-        {result?.access_url && ( // access_url ရှိမှသာ ပြမည်
+        {result?.access_url && (
           <div className="mt-6 p-4 bg-emerald-900/20 border border-emerald-500 rounded-xl max-w-lg mx-auto">
             <p className="text-emerald-400 font-bold">သင်၏ Key ရရှိပါပြီ:</p>
             <code className="block bg-black p-3 mt-2 break-all text-sm rounded">{result.access_url}</code>
