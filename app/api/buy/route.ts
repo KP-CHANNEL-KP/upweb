@@ -7,22 +7,27 @@ export async function POST(req: Request) {
     const { plan } = await req.json() as { plan: string };
     const db = process.env.DB as any;
 
-    // ပြင်ဆင်ချက် - run() အစား first() ကို သုံးပြီး insert လုပ်ပါ
-    // D1 မှာ RETURNING ကို တိုက်ရိုက်သုံးမယ့်အစား last_insert_rowid() နဲ့ ယူတာ ပိုမှန်ပါတယ်
+    // 1. Data ထည့်သွင်းခြင်း (id သည် table ဆောက်စဉ်က PRIMARY KEY AUTOINCREMENT ဖြစ်ရမည်)
     await db.prepare("INSERT INTO orders (plan, status) VALUES (?, ?)")
       .bind(plan, 'pending')
       .run();
 
+    // 2. နောက်ဆုံးထည့်လိုက်တဲ့ ID ကို ချက်ချင်းပြန်ထုတ်ယူခြင်း
     const orderRow = await db.prepare("SELECT last_insert_rowid() as id").first();
-    const orderId = orderRow.id; 
+    const orderId = orderRow?.id;
 
-    // Telegram Bot ဆီသို့ Command ပို့ခြင်း
+    if (!orderId) {
+      throw new Error("Could not retrieve new order ID");
+    }
+
+    // 3. Telegram Bot ဆီသို့ Command ပို့ခြင်း
     const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
     
     // Plan ပေါ်မူတည်ပြီး command အပြည့်အစုံပို့ပါ
-    const planValue = plan.split(' ')[0]; // ဥပမာ - "1 GB Plan" ဆိုရင် "1" ထွက်လာမယ်
-    const textToSend = `/getkey ${planValue} | order_id:${orderId}`;
+    const planValue = plan.split(' ')[0]; 
+    // Bot ဘက်က split လုပ်ရလွယ်ကူအောင် order_id:4 ဆိုတဲ့ ပုံစံအတိုင်းပို့ပါ
+    const textToSend = `/getkey ${planValue} order_id:${orderId}`;
 
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
