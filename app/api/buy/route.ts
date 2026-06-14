@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
     // D1 Database ကို ချိတ်ဆက်ခြင်း (env variable ကို wrangler.toml ထဲမှာ ထည့်ထားရပါမယ်)
     // process.env.DB ဆိုသည်မှာ သင့် D1 database binding name ဖြစ်ပါသည်
-    const db = process.env.DB as any;
+    const db = process.env.USER_DB as any;
 
     // Database ထဲသို့ အော်ဒါအသစ်ထည့်ခြင်း
     const { results } = await db.prepare(
