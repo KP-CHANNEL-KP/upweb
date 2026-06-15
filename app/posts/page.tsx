@@ -15,7 +15,7 @@ export default function PostsPage() {
     { num: "၀၃", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp1N2p3dW15OHVsZTVwbTVr@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 3" },
     { num: "၀၄", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToxZGhoeXR1bGo4ZW5vdGpl@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 4" },
     { num: "၀၅", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpyYWp0eTZydTkzcXh4azhk@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 5" },
-    { num: "၀၆", title: "Starlink OLd Free", date: "Http Injector Vpn ထဲမှာ ထည့်သွင်းအသုံးပြုပါ။", desc: "hb2wpXSr" },
+    
   ];
 
   const handleCopy = (desc: string) => {
