@@ -10,11 +10,11 @@ export default function PostsPage() {
   const [message, setMessage] = useState('');
 
   const posts = [
-    { num: "၀၁", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpoMjc3end2MjloMjQxNHJ3@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 1" },
-    { num: "၀၂", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo5dDFpbHdhcnduOHBxMjM3@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 2" },
-    { num: "၀၃", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo5NnowdXE1NGlyMWxnbXk2@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 3" },
-    { num: "၀၄", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpwdnEwNjBiZ2QweTducDZ0@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 4" },
-    { num: "၀၅", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0YzRmcWl0NzJxNG4zMXd6@104.207.77.150:55265?type=tcp#KP OUTLINE 6.12.2026 FREE 5" },
+    { num: "၀၁", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo3NXg4YTUxNnNoOTNrM2Vz@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 1" },
+    { num: "၀၂", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp3cnVsNmFteGVncHpxcGUy@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 2" },
+    { num: "၀၃", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp1N2p3dW15OHVsZTVwbTVr@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 3" },
+    { num: "၀၄", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToxZGhoeXR1bGo4ZW5vdGpl@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 4" },
+    { num: "၀၅", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpyYWp0eTZydTkzcXh4azhk@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 5" },
     { num: "၀၆", title: "Starlink OLd Free", date: "Http Injector Vpn ထဲမှာ ထည့်သွင်းအသုံးပြုပါ။", desc: "hb2wpXSr" },
   ];
 
