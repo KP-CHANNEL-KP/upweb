@@ -17,12 +17,12 @@ export default function Popup() {
         <button onClick={() => setShow(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white font-bold">✕</button>
         <h2 className="text-2xl font-bold text-red-500 mb-4">Premium Vpn Key ဝယ်ယူရန်</h2>
         <div className="text-gray-300 space-y-2 mb-6">
-          <p>❄ 1 Month - 5000 Ks</p>
-          <p>❄ 3 Months - 10000 Ks</p>
-          <p>❄ 6 Months - 20000 Ks</p>
-          <p>❄ 1 GB - 50 Ks</p>
-          <p>❄ 10 GB - 500 Ks</p>
-          <p>❄ 100 GB - 5000 Ks</p>
+          <p>❄ 1 Month - 5000 Ks - Umlimit Data</p>
+          <p>❄ 3 Months - 10000 Ks - Umlimit Data</p>
+          <p>❄ 6 Months - 20000 Ks - Umlimit Data</p>
+          <p>❄ 200 GB - 5000 Ks - Umlimit Date</p>
+          <p>❄ 400 GB - 9000 Ks - Umlimit Date</p>
+          <p>❄ 1000 GB - 15000 Ks - Umlimit Date</p>
         </div>
         <div className="space-y-3">
           <a href="https://t.me/KP_CHANNEL_KP" className="block bg-blue-600 py-2 rounded-xl font-bold text-white">Telegram Channel</a>
