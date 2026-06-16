@@ -10,12 +10,13 @@ export default function PostsPage() {
   const [message, setMessage] = useState('');
 
   const posts = [
-    { num: "၀၁", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo3NXg4YTUxNnNoOTNrM2Vz@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 1" },
-    { num: "၀၂", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp3cnVsNmFteGVncHpxcGUy@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 2" },
-    { num: "၀၃", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp1N2p3dW15OHVsZTVwbTVr@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 3" },
-    { num: "၀၄", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToxZGhoeXR1bGo4ZW5vdGpl@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 4" },
-    { num: "၀၅", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpyYWp0eTZydTkzcXh4azhk@104.207.77.150:55265?type=tcp#KP PREMIUM OUTLINE FREE 5" },
-    
+    { num: "၀၁", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvMTh2enh0Y2NkbW4xMGR3@104.207.77.150:55265?type=tcp#KP Outline Free Key" },
+    { num: "၀၂", title: "Vmess Key", date: "Premium High Speed", desc: "vmess://ewogICJhZGQiOiAiMTA0LjIwNy43Ny4xNTAiLAogICJpZCI6ICJlNGZiYjI2NC03Y2VlLTQ3ZWUtYjJlMy02ZWY2ZGJmNTM4OTkiLAogICJuZXQiOiAidGNwIiwKICAicG9ydCI6IDQxODQ4LAogICJwcyI6ICJWbWVzcy1iazZhbHk4bG53LTEwLjAwR0Lwn5OKIiwKICAic2N5IjogImF1dG8iLAogICJ0bHMiOiAibm9uZSIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ==" },
+    { num: "၀၃", title: "Vless Key", date: "Premium High Speed", desc: "vless://43ecd280-aeac-4fd5-bc60-8915a1e7c315@104.207.77.150:21462?encryption=none&security=none&type=tcp#KP Vless Free Key" },
+    { num: "၀၄", title: "Trojan Key", date: "Premium High Speed", desc: "trojan://besgywthbikxrzv9@104.207.77.150:26665?security=none&type=tcp#KP Trojan Free Key" },
+    { num: "၀၅", title: "Starlink Old Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "XyWt3qJn" },
+    { num: "၀၆", title: "Thai Ais Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "gT8DQLaP" },
+    { num: "၀၇", title: "Atom Tiktok + ထောပီ Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "qMHMBhRp" },
   ];
 
   const handleCopy = (desc: string) => {
