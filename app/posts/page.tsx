@@ -10,13 +10,12 @@ export default function PostsPage() {
   const [message, setMessage] = useState('');
 
   const posts = [
-    { num: "၀၁", title: "Outline Key", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvMTh2enh0Y2NkbW4xMGR3@104.207.77.150:55265?type=tcp#KP Outline Free Key" },
-    { num: "၀၂", title: "Vmess Key", date: "Premium High Speed", desc: "vmess://ewogICJhZGQiOiAiMTA0LjIwNy43Ny4xNTAiLAogICJpZCI6ICJlNGZiYjI2NC03Y2VlLTQ3ZWUtYjJlMy02ZWY2ZGJmNTM4OTkiLAogICJuZXQiOiAidGNwIiwKICAicG9ydCI6IDQxODQ4LAogICJwcyI6ICJWbWVzcy1iazZhbHk4bG53LTEwLjAwR0Lwn5OKIiwKICAic2N5IjogImF1dG8iLAogICJ0bHMiOiAibm9uZSIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ==" },
-    { num: "၀၃", title: "Vless Key", date: "Premium High Speed", desc: "vless://43ecd280-aeac-4fd5-bc60-8915a1e7c315@104.207.77.150:21462?encryption=none&security=none&type=tcp#KP Vless Free Key" },
-    { num: "၀၄", title: "Trojan Key", date: "Premium High Speed", desc: "trojan://besgywthbikxrzv9@104.207.77.150:26665?security=none&type=tcp#KP Trojan Free Key" },
-    { num: "၀၅", title: "Starlink Old Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "XyWt3qJn" },
-    { num: "၀၆", title: "Thai Ais Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "gT8DQLaP" },
-    { num: "၀၇", title: "Atom Tiktok + ထောပီ Key", date: "Http Injector Vpn ထဲတွင်သာထည့်သုံးပါ။", desc: "qMHMBhRp" },
+    { num: "၀၁", title: "Outline Key 1", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTplZGNlZjV5eWsxaXB5Z2hm@104.207.76.191:50959?type=tcp#KP-Outline-Free-1" },
+    { num: "၀၂", title: "Outline Key 2", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo3Mm1rcTlvOXJrZmpscm93@104.207.76.191:50959?type=tcp#KP-Outline-Free-2" },
+    { num: "၀၃", title: "Outline Key 3", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0MXpnNGFlNWNyYnlyOXdn@104.207.76.191:50959?type=tcp#KP-Outline-Free-3" },
+    { num: "၀၄", title: "Outline Key 4", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo2cDJoM3hmb3E2OWVvam5m@104.207.76.191:50959?type=tcp#KP-Outline-Free-4" },
+    { num: "၀၅", title: "Outline Key 5", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4dWUyZWl4ZjhmNzF4azA3@104.207.76.191:50959?type=tcp#KP-Outline-Free-5" },
+    
   ];
 
   const handleCopy = (desc: string) => {
@@ -50,7 +49,7 @@ export default function PostsPage() {
     <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
       <Toaster position="top-center" />
       <div className="max-w-2xl w-full">
-        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">Outline free Keys များသည် free ဖြစ်သောကြောင့် အချိတ်မရွေး Admin မှ ပြန်ပိတ်နိုင်သည်။</h1>
+        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">Outline free Keys များသည် free ဖြစ်သောကြောင့် အချိန်မရွေး Admin မှ ပြန်ပိတ်နိုင်သည်။</h1>
 
         {!isVerified ? (
           <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
