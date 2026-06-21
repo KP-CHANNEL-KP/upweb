@@ -15,8 +15,8 @@ export default function PostsPage() {
     { num: "၀၃", title: "Outline Key 3", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0MXpnNGFlNWNyYnlyOXdn@104.207.76.191:50959?type=tcp#KP-Outline-Free-3" },
     { num: "၀၄", title: "Outline Key 4", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo2cDJoM3hmb3E2OWVvam5m@104.207.76.191:50959?type=tcp#KP-Outline-Free-4" },
     { num: "၀၅", title: "Outline Key 5", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4dWUyZWl4ZjhmNzF4azA3@104.207.76.191:50959?type=tcp#KP-Outline-Free-5" },
-    { num: "၀၆", title: "Atom Daily 500Mb ( Npv Tunnel)", date: "Premium High Speed", desc: "4b0ec05b-0cd8-4abd-8ea2-0f55105bdb8f" },
-    { num: "၀၇", title: "Atom Tiktok Plan + ထောပီ pkg ( Npv Tunnel)", date: "Premium High Speed", desc: "8df75dcb-5795-4cb5-b3a0-c2a38204c0d3" },
+    { num: "၀၆", title: "Atom Daily 500Mb ( Npv Tunnel)", date: "Premium High Speed", desc: "df3418f7-c301-4b02-bff5-e0d17810f87c" },
+    { num: "၀၇", title: "Atom Tiktok Plan + ထောပီ pkg ( Npv Tunnel)", date: "Premium High Speed", desc: "7e2f7490-4523-4c75-9f9e-a3cdf5b52ea8" },
   ];
 
   const handleCopy = (desc: string) => {
