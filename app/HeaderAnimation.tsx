@@ -48,7 +48,7 @@ export default function HeaderAnimation() {
         }}
         style={{ color: "#00ff9d", fontWeight: "bold" }}
       >
-        KP SHOP
+        KP VPN WEB
       </motion.h1>
     </div>
   );
