@@ -56,7 +56,7 @@ export default function FreePage() {
     <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
       <Toaster />
       <div className="max-w-2xl w-full">
-        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">V2ray Keys များ Admin မှ ပြန်ဖွင့်ထားပါသည်။ဝယ်ယူလိုပါက = TG Acc - @KPBYKP / Viber - 09769043594 သို့ ဆက်သွယ်ပါ။</h1>
+        <h1 className="text-4xl font-bold text-center mb-10 text-emerald-400">V2ray Keys များ Admin မှ ပြန်( ပိတ် )ထားပါသည်။ဝယ်ယူလိုပါက = TG Acc - @KPBYKP / Viber - 09769043594 သို့ ဆက်သွယ်ပါ။</h1>
         
         {!isVerified ? (
           <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
