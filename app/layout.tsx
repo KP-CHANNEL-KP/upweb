@@ -6,6 +6,7 @@ import HeaderAnimation from './HeaderAnimation';
 import ClientWrapper from './components/ClientWrapper';
 import UserCount from './components/UserCount';
 import NotificationWrapper from './components/NotificationWrapper';
+import InstallButton from './components/InstallButton';
 
 export const metadata: Metadata = {
   title: 'KP Channel - Premium VPN Servers & Free Internet',
@@ -48,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           <Popup />
           <main className="max-w-5xl mx-auto px-4 py-6 min-h-screen">{children}</main>
-          
+          <InstallButton />
           <footer className="text-center py-6 text-gray-500 text-sm border-t border-gray-200 dark:border-white/5">
             <div className="mb-2">
                <UserCount />
