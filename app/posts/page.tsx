@@ -15,8 +15,8 @@ export default function PostsPage() {
     { num: "၀၃", title: "Outline Key 3", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0MXpnNGFlNWNyYnlyOXdn@104.207.76.191:50959?type=tcp#KP-Outline-Free-3" },
     { num: "၀၄", title: "Outline Key 4", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo2cDJoM3hmb3E2OWVvam5m@104.207.76.191:50959?type=tcp#KP-Outline-Free-4" },
     { num: "၀၅", title: "Outline Key 5", date: "Premium High Speed", desc: "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4dWUyZWl4ZjhmNzF4azA3@104.207.76.191:50959?type=tcp#KP-Outline-Free-5" },
-    { num: "၀၆", title: "Atom Daily 500Mb ( Npv Tunnel)", date: "Premium High Speed", desc: "4b0ec05b-0cd8-4abd-8ea2-0f55105bdb8f" },
-    { num: "၀၇", title: "Atom Tiktok Plan + ထောပီ pkg ( Npv Tunnel)", date: "Premium High Speed", desc: "8df75dcb-5795-4cb5-b3a0-c2a38204c0d3" },
+    { num: "၀၆", title: "Ruijie Starlink Old", date: "Premium High Speed", desc: "vless://bbb616d7-0840-4c37-a102-3035bf3fe41e@104.207.76.191:80?path=%2FKP-CHANNEL&security=none&encryption=none&host=portal-as.ruijienetworks.com&type=ws#Kp_Ruijie_Starlink_Old" },
+    
   ];
 
   const handleCopy = (desc: string) => {
