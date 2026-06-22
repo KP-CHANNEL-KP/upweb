@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Script from 'next/script';
 // @ts-ignore: allow side-effect CSS import without type declarations
 import './globals.css';
 import Popup from './Popup';
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Popup />
           <main className="max-w-5xl mx-auto px-4 py-6 min-h-screen">{children}</main>
           <InstallButton />
+          
           <footer className="text-center py-6 text-gray-500 text-sm border-t border-gray-200 dark:border-white/5">
             <div className="mb-2">
                <UserCount />
@@ -57,6 +59,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             © 2026 KP VPN WEB • အားလုံးကို ချစ်ခင်စွာဖြင့်
           </footer>
         </ClientWrapper>
+
+        {/* Tawk.to Live Chat Widget */}
+        <Script id="tawk-script" strategy="afterInteractive">
+          {`
+            var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+            (function(){
+              var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+              s1.async=true;
+              s1.src='https://embed.tawk.to/6a39c17c37084e1d491cf318/1jropnl8t';
+              s1.charset='UTF-8';
+              s1.setAttribute('crossorigin','*');
+              s0.parentNode.insertBefore(s1,s0);
+            })();
+          `}
+        </Script>
       </body>
     </html>
   );
