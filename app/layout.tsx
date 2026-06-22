@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="mb-2">
                <UserCount />
             </div>
-            © 2026 KP VPN WEB • အားလုံးကို ချစ်ခင်စွာဖြင့်
+            © 2026 KP VPN WEB • အားလုံးကို ချစ်ခင်စွာဖြင့် 💕
           </footer>
         </ClientWrapper>
       </body>
