@@ -9,6 +9,7 @@ import NotificationWrapper from './components/NotificationWrapper';
 
 export const metadata: Metadata = {
   title: 'KP Channel - Premium VPN Servers & Free Internet',
+  manifest: '/manifest.json',
   description: 'အရည်အသွေးမြင့်မားပြီး မြန်ဆန်သော VPN ဖိုင်များကို ဤနေရာတွင် အခမဲ့ ရယူနိုင်ပါသည်။',
   viewport: 'width=device-width, initial-scale=1',
 };
