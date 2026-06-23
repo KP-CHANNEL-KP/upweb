@@ -8,9 +8,7 @@ export default function VPNFilesPage() {
   const [message, setMessage] = useState('');
 
   const vpnFiles = [
-    { name: "KP ATOM + COMBO (HTTP INJECTOR)", url: "/vpnfiles/KP_ATOM_+_COMBO.ehi", speed: "High Speed" },
-    { name: "KP MPT GAME PLAN (HTTP INJECTOR)", url: "/vpnfiles/KP_MPT_GAME_PLAN.ehi", speed: "High Speed" },
-    { name: "KP STARLINK RUIJIE OLD (HTTP INJECTOR)", url: "/vpnfiles/KP_RUIJIE_OLD.ehi", speed: "High Speed" },
+    { name: "KP Atom Tiktok + ထောပီ (Npv Tunnel)", url: "/vpnfiles/KP_ATOM_TIKTOK_+_THAWB.npvt", speed: "High Speed" },
   ];
 
   const handleVerify = async () => {
