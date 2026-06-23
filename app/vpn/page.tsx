@@ -30,7 +30,7 @@ export default function VPNFilesPage() {
     <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
       <div className="max-w-2xl w-full">
         <h1 className="text-2xl md:text-4xl font-bold text-center mb-8 px-4 leading-snug text-emerald-400">
-  Vpn Files များ Admin မှ ပြန်(ပိတ်)ထားပါသည်။
+  Vpn Files များ Admin မှ ပြန် (ဖွင့်) ထားပါသည်။
   <span className="block text-lg md:text-xl text-gray-300 mt-3 font-medium">
     ဝယ်ယူလိုပါက = TG Acc - @KPBYKP / Viber - 09769043594 သို့ ဆက်သွယ်ပါ။
   </span>
