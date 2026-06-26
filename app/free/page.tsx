@@ -65,7 +65,7 @@ export default function FreePage() {
         
         {!isVerified ? (
           <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
-            <h2 className="mb-4 text-xl">Vpn Key များအား အသုံးပြုလိုပါက Bot မှ Key သွားယူထည့်ပါ။</h2>
+            <h2 className="mb-4 text-xl">V2ray Keys များအား အသုံးပြုလိုပါက Bot မှ Key သွားယူထည့်ပါ။</h2>
             <input 
               className="w-full p-4 mb-4 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-emerald-500"
               placeholder="Enter Access Key..."
