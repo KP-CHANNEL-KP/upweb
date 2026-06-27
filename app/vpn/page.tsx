@@ -2,89 +2,115 @@
 import { useState } from 'react';
 import Banner from '../components/Banner';
 
+interface VerifyResponse { valid: boolean; message?: string; }
+
 export default function VPNFilesPage() {
   const [key, setKey] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const vpnFiles = [
-    { name: "KP Atom Tiktok + ထောပီ (Npv Tunnel)", url: "/vpnfiles/KP_ATOM_TIKTOK_+_THAWB.npvt", speed: "High Speed" },
+    { name: 'KP Atom Tiktok + ထောပီ (Npv Tunnel)', url: '/vpnfiles/KP_ATOM_TIKTOK_+_THAWB.npvt', speed: 'High Speed' },
   ];
 
   const handleVerify = async () => {
-    const res = await fetch('/api/verify-key', {
-      method: 'POST',
-      body: JSON.stringify({ key }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data = (await res.json()) as any;
+    if (!key.trim()) return;
+    setLoading(true);
+    setMessage('');
+    try {
+      const res = await fetch('/api/verify-key', {
+        method: 'POST',
+        body: JSON.stringify({ key }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = (await res.json()) as VerifyResponse;
 
-    if (data.valid) {
-      setIsVerified(true);
-    } else {
-      setMessage(data.message || "Key မမှန်ပါ။");
+      if (data.valid) {
+        setIsVerified(true);
+      } else {
+        setMessage(data.message || 'Key မမှန်ပါ။');
+      }
+    } catch {
+      setMessage('Connection Error ဖြစ်နေသည်');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
-      <div className="max-w-2xl w-full">
-        <h1 className="text-2xl md:text-4xl font-bold text-center mb-8 px-4 leading-snug text-emerald-400">
-  Vpn Files များ Admin မှ ပြန် (ပိတ်) ထားပါသည်။
-  <span className="block text-lg md:text-xl text-gray-300 mt-3 font-medium">
-    ဝယ်ယူလိုပါက = TG Acc - @KPBYKP / Viber - 09769043594 သို့ ဆက်သွယ်ပါ။
-  </span>
-</h1>
+    <main className="vp-main">
+      <div className="vp-grid-bg" />
+      <div className="vp-glow" />
+
+      <div className="vp-container">
+        <div className="vp-header">
+          <span className="kp-badge">
+            <span className="kp-badge-dot" />
+            VPN Files
+          </span>
+          <h1 className="vp-title">
+            Vpn Files များ Admin မှ <span className="kp-title-gradient">ပြန် (ပိတ်)</span> ထားပါသည်
+          </h1>
+          <p className="vp-sub">
+            ဝယ်ယူလိုပါက →{' '}
+            <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="vp-contact-link">
+              TG: @KPBYKP
+            </a>{' '}
+            / <span className="vp-contact-link">Viber: 09769043594</span>
+          </p>
+        </div>
 
         {!isVerified ? (
-          <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
-            <h2 className="mb-4 text-xl">Vpn ဖိုင်များ Download ရယူရန် Key ထည့်ပေးပါ</h2>
-            <input 
-              type="text" 
-              placeholder="Enter Access Key..." 
-              value={key} 
+          <div className="vp-gate-card">
+            <div className="vp-gate-icon">🔐</div>
+            <h2 className="vp-gate-title">Vpn ဖိုင်များ Download ရယူရန် Key ထည့်ပေးပါ</h2>
+
+            <input
+              type="text"
+              placeholder="Enter Access Key..."
+              value={key}
               onChange={(e) => setKey(e.target.value)}
-              className="w-full p-4 mb-4 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-emerald-500 transition"
+              onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
+              className="vp-input"
             />
-            <button 
-              onClick={handleVerify} 
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-black p-3 rounded-lg font-bold transition"
-            >
-              အတည်ပြုမည်
+
+            <button onClick={handleVerify} disabled={loading} className="vp-btn-primary">
+              {loading ? <span className="vp-spinner" /> : 'အတည်ပြုမည်'}
             </button>
 
-            {/* Telegram Bot Link Section */}
-            <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-gray-400 mb-3 text-sm">Key မရှိသေးပါက အောက်ပါ Bot တွင်ရယူပါ</p>
-              <a 
-                href="https://t.me/KP_WEB_KEY_BOT" 
-                target="_blank" 
-                className="block w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg font-bold transition"
-              >
-                🚀 Telegram Bot သို့သွားရန်
-              </a>
+            <div className="vp-divider">
+              <span>သို့မဟုတ်</span>
             </div>
 
-            {message && <p className="text-red-400 mt-4">{message}</p>}
+            <a
+              href="https://t.me/KP_WEB_KEY_BOT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="vp-btn-tg"
+            >
+              🚀 Telegram Bot သို့သွားရန်
+            </a>
+
+            {message && (
+              <div className="vp-error">
+                <span>⚠️</span> {message}
+              </div>
+            )}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="vp-files-list">
             {vpnFiles.map((file, index) => (
-              <div key={index} className="bg-slate-800/50 border border-white/10 rounded-2xl p-5 hover:border-emerald-500/50 transition duration-300">
-                <a 
-                  href={file.url} 
-                  download 
-                  className="flex justify-between items-center"
-                >
-                  <div className="text-left">
-                    <strong className="block text-lg text-emerald-400">{file.name}</strong>
-                    <small className="text-gray-400">{file.speed}</small>
+              <div key={index} className="vp-file-card">
+                <div className="vp-file-stripe" />
+                <a href={file.url} download className="vp-file-row">
+                  <div className="vp-file-info">
+                    <strong className="vp-file-name">{file.name}</strong>
+                    <small className="vp-file-speed">{file.speed}</small>
                   </div>
-                  <span className="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full border border-emerald-500/50 font-bold">
-                    Download
-                  </span>
+                  <span className="vp-download-badge">⬇ Download</span>
                 </a>
-                <div className="mt-6 border-t border-white/5 pt-4">
+                <div className="vp-banner-wrap">
                   <Banner />
                 </div>
               </div>

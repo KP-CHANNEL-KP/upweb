@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+// 👇 Banner component ကို import လိုအပ်ပါသည် — path ကို သင့်ရဲ့ project structure အတိုင်း ပြောင်းပေးပါ
 import Banner from '../components/Banner';
 
 interface KeyItem { key: string; ping: number; }
@@ -11,97 +12,175 @@ export default function FreePage() {
   const [verifyInput, setVerifyInput] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [keysLoading, setKeysLoading] = useState(false);
 
- useEffect(() => {
-  const loadKeys = async () => {
-    try {
-      const res = await fetch('https://webbot.kpchannel.cc.cd/fetch-keys-with-ping');
-      const rawData = (await res.json()) as KeyItem[];
-      
-      // Ping စစ်စရာမလိုတော့လို့ Data ကို ချက်ချင်းပြမယ်
-      // UI မှာ 0ms လို့မပေါ်အောင် status အနေနဲ့ သုံးမယ်
-      setKeys(rawData); 
-    } catch (error) {
-      console.error("Failed to load keys:", error);
-      toast.error("VPN Keys များရယူရန် အဆင်မပြေဖြစ်နေသည်");
-    }
-  };
-  loadKeys();
-}, []);
+  useEffect(() => {
+    if (!isVerified) return;
+    const loadKeys = async () => {
+      setKeysLoading(true);
+      try {
+        const res = await fetch('https://webbot.kpchannel.cc.cd/fetch-keys-with-ping');
+        const rawData = (await res.json()) as KeyItem[];
+        setKeys(rawData);
+      } catch {
+        toast.error('VPN Keys များရယူရန် အဆင်မပြေဖြစ်နေသည်');
+      } finally {
+        setKeysLoading(false);
+      }
+    };
+    loadKeys();
+  }, [isVerified]);
 
   const handleCopy = (key: string) => {
     navigator.clipboard.writeText(key);
-    toast.success('Copied to clipboard!', { style: { background: '#10b981', color: '#fff' } });
+    toast.success('Copied!', {
+      style: { background: '#7C3AED', color: '#fff', borderRadius: '10px' },
+    });
   };
 
   const handleVerify = async () => {
+    if (!verifyInput.trim()) return;
+    setLoading(true);
+    setMessage('');
     try {
       const res = await fetch('https://webbot.kpchannel.cc.cd/verify-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: verifyInput })
+        body: JSON.stringify({ key: verifyInput }),
       });
-      const data = await res.json() as { valid: boolean; message?: string };
+      const data = (await res.json()) as { valid: boolean; message?: string };
       if (data.valid) {
         setIsVerified(true);
       } else {
-        setMessage(data.message || "Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်");
+        setMessage(data.message || 'Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်');
       }
     } catch {
-      setMessage("Connection Error ဖြစ်နေသည်");
+      setMessage('Connection Error ဖြစ်နေသည်');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const filtered = keys.filter((k) => k.key.includes(searchTerm));
+
   return (
-    <main className="min-h-screen bg-slate-900 p-6 flex justify-center text-gray-100">
-      <Toaster />
-      <div className="max-w-2xl w-full">
-        <h1 className="text-2xl md:text-4xl font-bold text-center mb-8 px-4 leading-snug text-emerald-400">
-  V2ray Keys များ Admin မှ ပြန် (ဖွင့်) ထားပါသည်။
-  <span className="block text-lg md:text-xl text-gray-300 mt-3 font-medium">
-    ဝယ်ယူလိုပါက = TG Acc - @KPBYKP / Viber - 09769043594 သို့ ဆက်သွယ်ပါ။
-  </span>
-</h1>
-        
+    <main className="fp-main">
+      <Toaster position="top-center" />
+
+      <div className="fp-grid-bg" />
+      <div className="fp-glow" />
+
+      <div className="fp-container">
+        <div className="fp-header">
+          <span className="fp-badge">
+            <span className="fp-badge-dot" />
+            Free VPN Keys
+          </span>
+          <h1 className="fp-title">
+            V2ray Keys များ<br />
+            <span className="fp-title-gradient">Admin မှ ဖွင့်ထားပါသည်</span>
+          </h1>
+          <p className="fp-sub">
+            ဝယ်ယူလိုပါက →{' '}
+            <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
+              TG: @KPBYKP
+            </a>{' '}
+            /{' '}
+            <span className="fp-contact-link">Viber: 09769043594</span>
+          </p>
+        </div>
+
         {!isVerified ? (
-          <div className="bg-slate-800 p-8 rounded-2xl border border-emerald-500/30 text-center">
-            <h2 className="mb-4 text-xl">V2ray Keys များအား အသုံးပြုလိုပါက Bot မှ Key သွားယူထည့်ပါ။</h2>
-            <input 
-              className="w-full p-4 mb-4 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-emerald-500"
-              placeholder="Enter Access Key..."
+          <div className="fp-gate-card">
+            <div className="fp-gate-icon">🔐</div>
+            <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
+            <p className="fp-gate-desc">
+              V2ray Keys များ ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ
+            </p>
+
+            <input
+              className="fp-input"
+              placeholder="Access Key ထည့်ပါ..."
+              value={verifyInput}
               onChange={(e) => setVerifyInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
             />
-            <button onClick={handleVerify} className="w-full bg-emerald-600 hover:bg-emerald-500 p-3 rounded-lg font-bold transition">အတည်ပြုမည်</button>
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <a href="https://t.me/KP_WEB_KEY_BOT" target="_blank" className="block w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold transition">🚀 Telegram Bot သို့သွားရန်</a>
+
+            <button onClick={handleVerify} disabled={loading} className="fp-btn-primary">
+              {loading ? <span className="fp-spinner" /> : '✓ အတည်ပြုမည်'}
+            </button>
+
+            <div className="fp-divider">
+              <span>သို့မဟုတ်</span>
             </div>
-            {message && <p className="text-red-400 mt-4">{message}</p>}
+
+            <a
+              href="https://t.me/KP_WEB_KEY_BOT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fp-btn-tg"
+            >
+              🚀 Telegram Bot မှ Key ယူရန်
+            </a>
+
+            {message && (
+              <div className="fp-error">
+                <span>⚠️</span> {message}
+              </div>
+            )}
           </div>
         ) : (
           <>
-            <input 
-              className="w-full p-4 mb-8 bg-slate-800 rounded-xl border border-emerald-500/30 outline-none focus:border-emerald-500"
-              placeholder="🔎 ရှာရန် (ဥပမာ - Server 1)..." 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-            />
-            <div className="grid grid-cols-1 gap-6">
-              {keys.filter(k => k.key.includes(searchTerm)).map((item, index) => (
-                <div key={index} className="bg-slate-800/50 border border-white/10 rounded-2xl p-5 hover:border-emerald-500/50 transition duration-300">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg text-emerald-400">VPN Server {index + 1}</h3>
-                    
-<span className={`text-xs px-2 py-1 rounded ${item.ping === 0 ? 'bg-blue-900 text-blue-300' : 'bg-green-900 text-green-300'}`}>
-  {item.ping === 0 ? 'Active' : `${item.ping}ms`}
-</span>
-                  </div>
-                  <div className="w-full bg-black/30 p-4 rounded-lg text-xs font-mono text-gray-300 break-all mb-4 border border-white/5 h-20 overflow-y-auto">
-                    {item.key}
-                  </div>
-                  <button onClick={() => handleCopy(item.key)} className="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-bold py-2 rounded-lg transition">COPY</button>
-                  <div className="mt-6 border-t border-white/5 pt-4"><Banner /></div>
-                </div>
-              ))}
+            <div className="fp-search-wrap">
+              <span className="fp-search-icon">🔎</span>
+              <input
+                className="fp-search"
+                placeholder="ရှာရန် (ဥပမာ - Server 1)..."
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+
+            <p className="fp-count">Keys {filtered.length} ခု ရှိသည်</p>
+
+            {keysLoading ? (
+              <div className="fp-loading">
+                <div className="fp-loading-dots">
+                  <span /><span /><span />
+                </div>
+                <p>Keys များ ရယူနေသည်...</p>
+              </div>
+            ) : (
+              <div className="fp-keys-grid">
+                {filtered.map((item, index) => (
+                  <div key={index} className="fp-key-card">
+                    <div className="fp-key-stripe" />
+
+                    <div className="fp-key-header">
+                      <div className="fp-key-title-row">
+                        <span className="fp-key-icon">🛡️</span>
+                        <h3 className="fp-key-name">VPN Server {index + 1}</h3>
+                      </div>
+                      <span className={`fp-status ${item.ping === 0 ? 'fp-status-active' : 'fp-status-live'}`}>
+                        {item.ping === 0 ? '● Active' : `● ${item.ping}ms`}
+                      </span>
+                    </div>
+
+                    <div className="fp-key-box">
+                      <code className="fp-key-text">{item.key}</code>
+                    </div>
+
+                    <button onClick={() => handleCopy(item.key)} className="fp-copy-btn">
+                      📋 Copy Key
+                    </button>
+
+                    <div className="fp-banner-wrap">
+                      <Banner />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>
