@@ -6,6 +6,15 @@ import Banner from '../components/Banner';
 
 interface KeyItem { key: string; ping: number; }
 
+// ping တန်ဖိုးအပေါ် badge info ထုတ်မယ်
+function getPingBadge(ping: number): { label: string; className: string } {
+  if (ping === -1) return { label: '⚫ Timeout',   className: 'fp-ping-dead' };
+  if (ping === 0)  return { label: '🟢 Active',    className: 'fp-ping-active' };
+  if (ping < 100)  return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
+  if (ping < 300)  return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
+  return             { label: `🔴 ${ping}ms`,       className: 'fp-ping-slow' };
+}
+
 export default function FreePage() {
   const [keys, setKeys] = useState<KeyItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +71,11 @@ export default function FreePage() {
     }
   };
 
-  const filtered = keys.filter((k) => k.key.includes(searchTerm));
+  const filtered = keys.filter((k) => k.key.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  // Online key အရေအတွက် ရေတွက်မယ်
+  const onlineCount  = keys.filter(k => k.ping !== -1).length;
+  const timeoutCount = keys.filter(k => k.ping === -1).length;
 
   return (
     <main className="fp-main">
@@ -132,6 +145,15 @@ export default function FreePage() {
           </div>
         ) : (
           <>
+            {/* Stats Bar */}
+            {!keysLoading && keys.length > 0 && (
+              <div className="fp-stats-bar">
+                <span className="fp-stat fp-stat-total">🔑 စုစုပေါင်း {keys.length} ခု</span>
+                <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} ခု</span>
+                <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} ခု</span>
+              </div>
+            )}
+
             <div className="fp-search-wrap">
               <span className="fp-search-icon">🔎</span>
               <input
@@ -148,37 +170,46 @@ export default function FreePage() {
                 <div className="fp-loading-dots">
                   <span /><span /><span />
                 </div>
-                <p>Keys များ ရယူနေသည်...</p>
+                <p>Keys နှင့် Ping တန်ဖိုးများ စစ်နေသည်...</p>
               </div>
             ) : (
               <div className="fp-keys-grid">
-                {filtered.map((item, index) => (
-                  <div key={index} className="fp-key-card">
-                    <div className="fp-key-stripe" />
+                {filtered.map((item, index) => {
+                  const badge = getPingBadge(item.ping);
+                  const isDead = item.ping === -1;
+                  return (
+                    <div key={index} className={`fp-key-card ${isDead ? 'fp-key-card-dead' : ''}`}>
+                      <div className="fp-key-stripe" />
 
-                    <div className="fp-key-header">
-                      <div className="fp-key-title-row">
-                        <span className="fp-key-icon">🛡️</span>
-                        <h3 className="fp-key-name">VPN Server {index + 1}</h3>
+                      <div className="fp-key-header">
+                        <div className="fp-key-title-row">
+                          <span className="fp-key-icon">🛡️</span>
+                          <h3 className="fp-key-name">VPN Server {index + 1}</h3>
+                        </div>
+                        {/* Ping Badge */}
+                        <span className={`fp-ping-badge ${badge.className}`}>
+                          {badge.label}
+                        </span>
                       </div>
-                      <span className={`fp-status ${item.ping === 0 ? 'fp-status-active' : 'fp-status-live'}`}>
-                        {item.ping === 0 ? '● Active' : `● ${item.ping}ms`}
-                      </span>
-                    </div>
 
-                    <div className="fp-key-box">
-                      <code className="fp-key-text">{item.key}</code>
-                    </div>
+                      <div className="fp-key-box">
+                        <code className="fp-key-text">{item.key}</code>
+                      </div>
 
-                    <button onClick={() => handleCopy(item.key)} className="fp-copy-btn">
-                      📋 Copy Key
-                    </button>
+                      <button
+                        onClick={() => handleCopy(item.key)}
+                        disabled={isDead}
+                        className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
+                      >
+                        {isDead ? '⚫ Timeout — မသုံးနိုင်ပါ' : '📋 Copy Key'}
+                      </button>
 
-                    <div className="fp-banner-wrap">
-                      <Banner />
+                      <div className="fp-banner-wrap">
+                        <Banner />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>

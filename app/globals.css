@@ -795,6 +795,40 @@ body {
   40%            { transform: scale(1); opacity: 1; }
 }
 
+/* ── Ping Stats Bar ── */
+.fp-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: var(--kp-card);
+  border: 1px solid var(--kp-border);
+  border-radius: 14px;
+}
+.fp-stat {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.fp-stat-total {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--kp-purple-light);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+.fp-stat-online {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--kp-green);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+.fp-stat-dead {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--kp-text-dim);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
 .fp-keys-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -811,6 +845,15 @@ body {
   box-shadow: var(--kp-shadow);
 }
 
+/* ── Dead Key Card ── */
+.fp-key-card-dead {
+  opacity: 0.55;
+  border-color: rgba(100, 116, 139, 0.15) !important;
+}
+.fp-key-card-dead .fp-key-stripe {
+  background: linear-gradient(90deg, #334155, #475569) !important;
+}
+
 .fp-key-stripe {
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, var(--kp-purple), var(--kp-cyan));
@@ -824,6 +867,46 @@ body {
 .fp-status        { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
 .fp-status-active { color: var(--kp-green); background: rgba(52, 211, 153, 0.12); }
 .fp-status-live   { color: var(--kp-cyan); background: rgba(34, 211, 238, 0.12); }
+
+/* ── Ping Badges ── */
+.fp-ping-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+/* 🟢 Excellent — 100ms အောက် */
+.fp-ping-excellent {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34D399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+/* 🟢 Active — ping 0 (server alive ဒါပေမဲ့ ms မသိ) */
+.fp-ping-active {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34D399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+/* 🟡 Good — 100-300ms */
+.fp-ping-good {
+  background: rgba(251, 191, 36, 0.1);
+  color: #FCD34D;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+/* 🔴 Slow — 300ms အထက် */
+.fp-ping-slow {
+  background: rgba(248, 113, 113, 0.1);
+  color: #F87171;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+/* ⚫ Timeout / Dead */
+.fp-ping-dead {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748B;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
 
 .fp-key-box {
   background: var(--kp-key-box-bg);
@@ -855,6 +938,15 @@ body {
   font-family: inherit;
 }
 .fp-copy-btn:hover { background: rgba(124, 58, 237, 0.2); }
+
+/* ── Dead Copy Button ── */
+.fp-copy-btn-dead {
+  background: rgba(100, 116, 139, 0.08) !important;
+  border-color: rgba(100, 116, 139, 0.2) !important;
+  color: var(--kp-text-dim) !important;
+  cursor: not-allowed !important;
+}
+
 .fp-banner-wrap    { margin-top: 14px; }
 
 /* ── Posts page extra ── */
