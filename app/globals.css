@@ -1190,3 +1190,37 @@ body {
   .kp-nav-link     { display: none; }
   .kp-theme-toggle { display: inline-flex; }
 }
+
+/* ── globals.css ရဲ့ အောက်ဆုံးမှာ ဒီ CSS တွေ ထပ်ထည့်ပါ ── */
+
+/* Checking state card */
+.fp-key-card-checking {
+  opacity: 0.8;
+  border-color: rgba(251, 191, 36, 0.15);
+}
+
+/* ⏳ Checking ping badge */
+.fp-ping-checking {
+  background: rgba(251, 191, 36, 0.1);
+  color: #FCD34D;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  animation: fp-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes fp-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Stats bar — checking & done badges */
+.fp-stat-checking {
+  background: rgba(251, 191, 36, 0.1);
+  color: #FCD34D;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.fp-stat-done {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34D399;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
