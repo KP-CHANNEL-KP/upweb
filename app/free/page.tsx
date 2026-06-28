@@ -198,7 +198,7 @@ export default function FreePage() {
           </span>
           <h1 className="fp-title">
             V2ray Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ဖွင့်ထားပါသည်</span>
+            <span className="fp-title-gradient">Admin မှ ( ပိတ် ) ထားပါသည်</span>
           </h1>
           <p className="fp-sub">
             ဝယ်ယူလိုပါက →{' '}

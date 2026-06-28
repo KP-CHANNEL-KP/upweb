@@ -4,12 +4,12 @@ import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 
 const posts = [
-  { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTplZGNlZjV5eWsxaXB5Z2hm@104.207.76.191:50959?type=tcp#KP-Outline-Free-1' },
-  { num: '၀၂', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo3Mm1rcTlvOXJrZmpscm93@104.207.76.191:50959?type=tcp#KP-Outline-Free-2' },
-  { num: '၀၃', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0MXpnNGFlNWNyYnlyOXdn@104.207.76.191:50959?type=tcp#KP-Outline-Free-3' },
-  { num: '၀၄', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo2cDJoM3hmb3E2OWVvam5m@104.207.76.191:50959?type=tcp#KP-Outline-Free-4' },
-  { num: '၀၅', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4dWUyZWl4ZjhmNzF4azA3@104.207.76.191:50959?type=tcp#KP-Outline-Free-5' },
-  { num: '၀၆', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'vless://bbb616d7-0840-4c37-a102-3035bf3fe41e@104.207.76.191:80?encryption=none&host=portal-as.ruijienetworks.com&path=%2FKP-CHANNEL&security=none&type=ws#Kp_Ruijie_Starlink_Old' },
+  { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၂', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၃', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၄', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၅', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၆', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'No Data' },
 ];
 
 export default function PostsPage() {
@@ -66,7 +66,7 @@ export default function PostsPage() {
           </span>
           <h1 className="fp-title">
             Outline Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ဖွင့်ထားပါသည်</span>
+            <span className="fp-title-gradient">Admin မှ ( ပိတ် ) ထားပါသည်</span>
           </h1>
           <p className="fp-sub">
             ဝယ်ယူလိုပါက →{' '}
@@ -81,7 +81,7 @@ export default function PostsPage() {
           <div className="fp-gate-card">
             <div className="fp-gate-icon">🔐</div>
             <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
-            <p className="fp-gate-desc">ပို့စ်များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
+            <p className="fp-gate-desc">Outline keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
 
             <input
               className="fp-input"
