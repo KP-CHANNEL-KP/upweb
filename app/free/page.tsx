@@ -7,9 +7,11 @@ import Banner from '../components/Banner';
 interface KeyItem { key: string; ping: number; }
 
 // ping တန်ဖိုးအပေါ် badge info ထုတ်မယ်
+// Backend ကနေ real TCP connect timing ပေးပို့တာဖြစ်တဲ့အတွက် ping=0 ဆိုလည်း
+// real measurement ပါ (sub-millisecond latency) — ဒါကြောင့် number ကို
+// အမြဲတမ်း ပြသပေးတယ်, generic "Active" placeholder မလိုအပ်ပါ။
 function getPingBadge(ping: number): { label: string; className: string } {
   if (ping === -1) return { label: '⚫ Timeout',   className: 'fp-ping-dead' };
-  if (ping === 0)  return { label: '🟢 Active',    className: 'fp-ping-active' };
   if (ping < 100)  return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
   if (ping < 300)  return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
   return             { label: `🔴 ${ping}ms`,       className: 'fp-ping-slow' };
