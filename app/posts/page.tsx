@@ -4,12 +4,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 
 const posts = [
-  { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'No Data' },
-  { num: '၀၂', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'No Data' },
-  { num: '၀၃', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'No Data' },
-  { num: '၀၄', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'No Data' },
-  { num: '၀၅', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'No Data' },
-  { num: '၀၆', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp5NjN2aTRzeGhmd3BpNGMy@129.212.238.130:12647?type=tcp#KP Premium Free Outline' },
+  { num: '၀၂', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'No Data' },
 ];
 
 export default function PostsPage() {
