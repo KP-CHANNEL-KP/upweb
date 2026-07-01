@@ -5,7 +5,7 @@ import Banner from '../components/Banner';
 
 const posts = [
   { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp5NjN2aTRzeGhmd3BpNGMy@129.212.238.130:12647?type=tcp#KP Premium Free Outline' },
-  { num: '၀၂', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'No Data' },
+  { num: '၀၂', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'trojan://7kcqad5c94yap4gq@129.212.238.130:80?host=portal-as.ruijienetworks.com&path=%2FKP-CHANNEL&security=none&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
 ];
 
 export default function PostsPage() {
