@@ -21,7 +21,9 @@ export const metadata: Metadata = {
 const navItems = [
   { name: 'Home',         href: '/' },
   { name: 'Outline Keys', href: '/posts' },
+  { name: 'Starlink',   href: '/starlink' },
   { name: 'V2ray Keys',   href: '/free' },
+  { name: 'Thai Servers',   href: '/thai' },
   { name: 'VPN Files',    href: '/vpn' },
   { name: 'Buy',          href: '/buy' },
   { name: 'My Account',   href: '/topup' },
