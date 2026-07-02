@@ -60,7 +60,7 @@ export default function PostsPage() {
             Outline VPN Keys
           </span>
           <h1 className="fp-title">
-            StarlinkKeys များ<br />
+            Starlink Keys များ<br />
             <span className="fp-title-gradient">Admin မှ ( ဖွင့် ) ထားပါသည်</span>
           </h1>
           <p className="fp-sub">
