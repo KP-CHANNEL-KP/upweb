@@ -4,8 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 
 const posts = [
-  { num: '၀၁', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp5NjN2aTRzeGhmd3BpNGMy@129.212.238.130:12647?type=tcp#KP Premium Free Outline' },
-  { num: '၀၂', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'trojan://7kcqad5c94yap4gq@129.212.238.130:80?host=portal-as.ruijienetworks.com&path=%2FKP-CHANNEL&security=none&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
+  { num: '၀၁', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'trojan://7kcqad5c94yap4gq@129.212.238.130:80?host=portal-as.ruijienetworks.com&path=%2FKP-CHANNEL&security=none&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
 ];
 
 export default function PostsPage() {
@@ -61,8 +60,8 @@ export default function PostsPage() {
             Outline VPN Keys
           </span>
           <h1 className="fp-title">
-            Outline Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ( ပိတ် ) ထားပါသည်</span>
+            StarlinkKeys များ<br />
+            <span className="fp-title-gradient">Admin မှ ( ဖွင့် ) ထားပါသည်</span>
           </h1>
           <p className="fp-sub">
             ဝယ်ယူလိုပါက →{' '}
@@ -77,7 +76,7 @@ export default function PostsPage() {
           <div className="fp-gate-card">
             <div className="fp-gate-icon">🔐</div>
             <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
-            <p className="fp-gate-desc">Outline keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
+            <p className="fp-gate-desc">Starlink keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
 
             <input
               className="fp-input"
