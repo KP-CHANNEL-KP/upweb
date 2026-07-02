@@ -4,7 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 
 const posts = [
-  { num: '၀၁', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'trojan://7kcqad5c94yap4gq@129.212.238.130:80?host=portal-as.ruijienetworks.com&path=%2FKP-CHANNEL&security=none&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
+  { num: '၀၁', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'vless://45c55bbc-0e08-4bdf-b00d-11041e09a41c@129.212.238.130:80?path=%2FKP-CHANNEL&security=none&encryption=none&host=portal-as.ruijienetworks.com&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
 ];
 
 export default function PostsPage() {
