@@ -1,9 +1,20 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 
-const posts = [
+interface Post {
+  num: string;
+  title: string;
+  date: string;
+  desc: string;
+}
+
+interface PostWithPing extends Post {
+  ping: number; // -2 = checking, -1 = timeout/dead, >=0 = ms
+}
+
+const posts: Post[] = [
   { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbnYwN3VvOWkwdW1lajc4@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-1' },
   { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmZHR5OTloY2NuZzMydW5l@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-2' },
   { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTozYmJhcXlrNmkxbjl5bWF2@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-3' },
@@ -11,11 +22,99 @@ const posts = [
   { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbWN4aWhlOXI0aDVhaG1t@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-5' },
 ];
 
+// ss:// key ထဲကနေ Host:Port ဆွဲထုတ်မယ်
+// Format: ss://BASE64(method:password)@host:port?type=tcp#name
+function extractHostPort(ssKey: string): { host: string; port: number } | null {
+  try {
+    const match = ssKey.match(/ss:\/\/[^@]+@([^:/?#]+):(\d+)/);
+    if (!match) return null;
+    return { host: match[1], port: parseInt(match[2]) };
+  } catch {
+    return null;
+  }
+}
+
+// Ping badge
+function getPingBadge(ping: number): { label: string; className: string } {
+  if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
+  if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
+  if (ping < 100) return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
+  if (ping < 300) return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
+  return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
+}
+
 export default function PostsPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [verifyInput, setVerifyInput] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [keys, setKeys] = useState<PostWithPing[]>(
+    posts.map((p) => ({ ...p, ping: -2 }))
+  );
+  const [pingDone, setPingDone] = useState(false);
+
+  // Server-side /api/ping endpoint ကို ခေါ်ပြီး real TCP ping စစ်မယ်
+  const runServerPing = useCallback(async () => {
+    setPingDone(false);
+
+    // Unique host:port — dedupe ပြီး api ကို တစ်ခါတည်း ပို့မယ်
+    const seen = new Set<string>();
+    const targets: { host: string; port: number }[] = [];
+
+    for (const p of posts) {
+      const parsed = extractHostPort(p.desc);
+      if (!parsed) continue;
+      const key = `${parsed.host}:${parsed.port}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        targets.push(parsed);
+      }
+    }
+
+    if (targets.length === 0) {
+      setPingDone(true);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/ping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targets }),
+      });
+      const data = (await res.json()) as {
+        results: { host: string; port: number; ping: number }[];
+      };
+
+      const ipPingMap = new Map<string, number>();
+      for (const r of data.results) {
+        ipPingMap.set(`${r.host}:${r.port}`, r.ping);
+      }
+
+      setKeys((prev) =>
+        prev.map((item) => {
+          const parsed = extractHostPort(item.desc);
+          if (!parsed) return item;
+          const ipKey = `${parsed.host}:${parsed.port}`;
+          const ping = ipPingMap.get(ipKey);
+          return ping !== undefined ? { ...item, ping } : item;
+        })
+      );
+    } catch {
+      toast.error('Ping စစ်ရန် မအောင်မြင်ပါ');
+      // Fetch fail ရင် အားလုံးကို dead (-1) အနေနဲ့ သတ်မှတ်မယ်
+      setKeys((prev) => prev.map((item) => ({ ...item, ping: -1 })));
+    } finally {
+      setPingDone(true);
+    }
+  }, []);
+
+  // Verify ပြီးတာနဲ့ ping စစ်မယ်
+  useEffect(() => {
+    if (!isVerified) return;
+    runServerPing();
+  }, [isVerified, runServerPing]);
 
   const handleCopy = (desc: string) => {
     navigator.clipboard.writeText(desc);
@@ -49,6 +148,10 @@ export default function PostsPage() {
       setLoading(false);
     }
   };
+
+  const onlineCount = keys.filter((k) => k.ping >= 0).length;
+  const timeoutCount = keys.filter((k) => k.ping === -1).length;
+  const checkingCount = keys.filter((k) => k.ping === -2).length;
 
   return (
     <main className="fp-main">
@@ -105,33 +208,64 @@ export default function PostsPage() {
             )}
           </div>
         ) : (
-          <div className="fp-keys-grid">
-            {posts.map((post, index) => (
-              <div key={index} className="fp-key-card">
-                <div className="fp-key-stripe" />
+          <>
+            {/* Stats Bar */}
+            <div className="fp-stats-bar">
+              <span className="fp-stat fp-stat-total">🔑 စုစုပေါင်း {keys.length} ခု</span>
+              <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} ခု</span>
+              <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} ခု</span>
+              {checkingCount > 0 && (
+                <span className="fp-stat fp-stat-checking">⏳ စစ်နေသည် {checkingCount} ခု</span>
+              )}
+              {pingDone && <span className="fp-stat fp-stat-done">✅ Ping စစ်ပြီး</span>}
+            </div>
 
-                <div className="fp-key-header">
-                  <div className="fp-key-title-row">
-                    <span className="po-num">{post.num}</span>
-                    <div>
-                      <h3 className="fp-key-name">{post.title}</h3>
-                      <p className="po-date">{post.date}</p>
+            <div className="fp-keys-grid">
+              {keys.map((post, index) => {
+                const badge = getPingBadge(post.ping);
+                const isDead = post.ping === -1;
+                const isChecking = post.ping === -2;
+                return (
+                  <div
+                    key={index}
+                    className={`fp-key-card ${isDead ? 'fp-key-card-dead' : ''} ${isChecking ? 'fp-key-card-checking' : ''}`}
+                  >
+                    <div className="fp-key-stripe" />
+
+                    <div className="fp-key-header">
+                      <div className="fp-key-title-row">
+                        <span className="po-num">{post.num}</span>
+                        <div>
+                          <h3 className="fp-key-name">{post.title}</h3>
+                          <p className="po-date">{post.date}</p>
+                        </div>
+                      </div>
+                      <span className={`fp-ping-badge ${badge.className}`}>
+                        {badge.label}
+                      </span>
                     </div>
+
+                    <div className="fp-key-box">
+                      <code className="fp-key-text">{post.desc}</code>
+                    </div>
+
+                    <button
+                      onClick={() => handleCopy(post.desc)}
+                      disabled={isDead || isChecking}
+                      className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
+                    >
+                      {isDead
+                        ? '⚫ Timeout — မသုံးနိုင်ပါ'
+                        : isChecking
+                        ? '⏳ Ping စစ်နေသည်...'
+                        : '📋 Copy Key'}
+                    </button>
                   </div>
-                  <span className="fp-status fp-status-active">● Active</span>
-                </div>
-
-                <div className="fp-key-box">
-                  <code className="fp-key-text">{post.desc}</code>
-                </div>
-
-                <button onClick={() => handleCopy(post.desc)} className="fp-copy-btn">
-                  📋 Copy Key
-                </button>
-              </div>
-            ))}
-            <div className="fp-banner-wrap"><Banner /></div>
-          </div>
+                );
+              })}
+              <div className="fp-banner-wrap"><Banner /></div>
+            </div>
+          </>
         )}
       </div>
     </main>
