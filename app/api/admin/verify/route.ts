@@ -7,7 +7,7 @@ interface Env {
 }
 
 export async function POST(request: Request) {
-  const { env } = getRequestContext() as { env: Env };
+  const { env } = getRequestContext() as unknown as { env: Env };
   const body = (await request.json()) as { password?: string };
 
   if (body.password && body.password === env.ADMIN_PASSWORD) {

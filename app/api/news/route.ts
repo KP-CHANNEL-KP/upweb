@@ -23,7 +23,7 @@ async function readNews(kv: KVNamespace): Promise<NewsItem[]> {
 
 // Public: anyone can read the news list
 export async function GET() {
-  const { env } = getRequestContext() as { env: Env };
+  const { env } = getRequestContext() as unknown as { env: Env };
   const news = await readNews(env.NEWS_KV);
   // newest first
   news.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -32,7 +32,7 @@ export async function GET() {
 
 // Admin only: add a news item
 export async function POST(request: Request) {
-  const { env } = getRequestContext() as { env: Env };
+  const { env } = getRequestContext() as unknown as { env: Env };
   const password = request.headers.get('x-admin-password');
 
   if (!password || password !== env.ADMIN_PASSWORD) {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
 // Admin only: delete a news item by id
 export async function DELETE(request: Request) {
-  const { env } = getRequestContext() as { env: Env };
+  const { env } = getRequestContext() as unknown as { env: Env };
   const password = request.headers.get('x-admin-password');
 
   if (!password || password !== env.ADMIN_PASSWORD) {
