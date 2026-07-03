@@ -65,7 +65,7 @@ export default function PostsPage() {
           </span>
           <h1 className="fp-title">
             Outline Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ( ပိတ် ) ထားပါသည်</span>
+            <span className="fp-title-gradient">Admin မှ ( ဖွင့် ) ထားပါသည်</span>
           </h1>
           <p className="fp-sub">
             ဝယ်ယူလိုပါက →{' '}
