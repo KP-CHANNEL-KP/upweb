@@ -11,7 +11,8 @@ interface Post {
 }
 
 interface PostWithPing extends Post {
-  ping: number; // -2 = checking, -1 = timeout/dead, >=0 = ms
+  ping: number;   // server-side status: -2 = checking, -1 = timeout/dead, >=0 = ms (authoritative)
+  myPing: number; // browser-side personalized latency: -2 = checking, -1 = not measured, >=0 = ms
 }
 
 const posts: Post[] = [
@@ -34,13 +35,43 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
-// Ping badge
+// Ping badge — server status (authoritative)
 function getPingBadge(ping: number): { label: string; className: string } {
   if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
   if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
-  if (ping < 100) return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
-  if (ping < 300) return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
-  return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
+  return { label: '🟢 Online', className: 'fp-ping-excellent' };
+}
+
+// "Your Ping" label — browser (user location) ကနေ တိုင်းတဲ့ personalized latency
+function getMyPingLabel(myPing: number): string {
+  if (myPing === -2) return 'သင့်ဆီက Ping: ⏳ စစ်နေသည်...';
+  if (myPing === -1) return '';
+  if (myPing < 150) return `သင့်ဆီက Ping: 🟢 ${myPing}ms`;
+  if (myPing < 400) return `သင့်ဆီက Ping: 🟡 ${myPing}ms`;
+  return `သင့်ဆီက Ping: 🔴 ${myPing}ms`;
+}
+
+// Browser ကနေ တိုက်ရိုက် latency တိုင်းမယ် — user ရဲ့ တကယ့် location ကနေ
+// (no-cors fetch — CORS error = server response ရလာတယ် = alive/latency ရ)
+async function checkPingBrowser(host: string, port: number): Promise<number> {
+  const start = performance.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 4000);
+
+  try {
+    await fetch(`https://${host}:${port}`, {
+      method: 'HEAD',
+      signal: controller.signal,
+      mode: 'no-cors',
+      cache: 'no-store',
+    });
+    clearTimeout(timer);
+    return Math.round(performance.now() - start);
+  } catch (e: any) {
+    clearTimeout(timer);
+    if (e?.name === 'AbortError') return -1;
+    return Math.round(performance.now() - start);
+  }
 }
 
 export default function PostsPage() {
@@ -50,9 +81,44 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(false);
 
   const [keys, setKeys] = useState<PostWithPing[]>(
-    posts.map((p) => ({ ...p, ping: -2 }))
+    posts.map((p) => ({ ...p, ping: -2, myPing: -1 }))
   );
   const [pingDone, setPingDone] = useState(false);
+
+  // Browser ကနေ user ရဲ့ ကိုယ်ပိုင် latency ကို chunk 5 စီ တိုင်းမယ်
+  const runBrowserPing = useCallback(async (targets: { host: string; port: number }[]) => {
+    // Checking state ကို online key တွေအတွက် ပြင်ထားမယ်
+    setKeys((prev) =>
+      prev.map((item) => {
+        const parsed = extractHostPort(item.desc);
+        if (!parsed) return item;
+        const isTarget = targets.some((t) => t.host === parsed.host && t.port === parsed.port);
+        return isTarget ? { ...item, myPing: -2 } : item;
+      })
+    );
+
+    const myPingMap = new Map<string, number>();
+    const chunks: { host: string; port: number }[][] = [];
+    for (let i = 0; i < targets.length; i += 5) chunks.push(targets.slice(i, i + 5));
+
+    for (const chunk of chunks) {
+      await Promise.all(
+        chunk.map(async ({ host, port }) => {
+          const ping = await checkPingBrowser(host, port);
+          myPingMap.set(`${host}:${port}`, ping);
+        })
+      );
+      setKeys((prev) =>
+        prev.map((item) => {
+          const parsed = extractHostPort(item.desc);
+          if (!parsed) return item;
+          const key = `${parsed.host}:${parsed.port}`;
+          const myPing = myPingMap.get(key);
+          return myPing !== undefined ? { ...item, myPing } : item;
+        })
+      );
+    }
+  }, []);
 
   // Server-side /api/ping endpoint ကို ခေါ်ပြီး real TCP ping စစ်မယ်
   const runServerPing = useCallback(async () => {
@@ -103,6 +169,16 @@ export default function PostsPage() {
           return ping !== undefined ? { ...item, ping } : item;
         })
       );
+
+      // Server status "Online" ပြတဲ့ key တွေအတွက်ပဲ — browser ကနေ
+      // user ရဲ့ တကယ့် location ကနေ personalized ping ထပ်တိုင်းမယ်
+      const onlineTargets = targets.filter((t) => {
+        const p = ipPingMap.get(`${t.host}:${t.port}`);
+        return p !== undefined && p >= 0;
+      });
+      if (onlineTargets.length > 0) {
+        runBrowserPing(onlineTargets);
+      }
     } catch {
       toast.error('Ping စစ်ရန် မအောင်မြင်ပါ');
       // Fetch fail ရင် အားလုံးကို dead (-1) အနေနဲ့ သတ်မှတ်မယ်
