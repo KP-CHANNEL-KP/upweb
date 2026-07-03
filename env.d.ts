@@ -14,3 +14,8 @@ declare global {
     }
   }
 }
+
+interface CloudflareEnv {
+  NEWS_KV: KVNamespace;
+  ADMIN_PASSWORD: string;
+}
