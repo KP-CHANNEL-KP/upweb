@@ -5,7 +5,7 @@ import Banner from '../components/Banner';
 import { useLanguage } from '../components/LanguageProvider';
 
 const posts = [
-  { num: '၀၁', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'vless://45c55bbc-0e08-4bdf-b00d-11041e09a41c@129.212.238.130:80?path=%2FKP-CHANNEL&security=none&encryption=none&host=portal-as.ruijienetworks.com&type=ws#Premium%20V2ray-Ruijie_Starlink_Old' },
+  { num: '၀၁', title: 'Ruijie Starlink Old', date: 'Premium High Speed', desc: 'No Data' },
 ];
 
 export default function PostsPage() {
@@ -62,7 +62,7 @@ export default function PostsPage() {
           </span>
           <h1 className="fp-title">
             {t('Starlink Keys များ', 'Starlink Keys')}<br />
-            <span className="fp-title-gradient">{t('Admin မှ ( ဖွင့် ) ထားပါသည်', 'Opened by Admin')}</span>
+            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Opened by Admin')}</span>
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}

@@ -22,11 +22,11 @@ interface PostWithPing extends Post {
 }
 
 const privatePosts: Post[] = [
-  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbnYwN3VvOWkwdW1lajc4@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-1', source: 'private' },
-  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmZHR5OTloY2NuZzMydW5l@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-2', source: 'private' },
-  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTozYmJhcXlrNmkxbjl5bWF2@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-3', source: 'private' },
-  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4Y3NtYmtxaXk4eWdmNzMy@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-4', source: 'private' },
-  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbWN4aWhlOXI0aDVhaG1t@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-5', source: 'private' },
+  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
+  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
+  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
+  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
+  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
 ];
 
 function parsePublicServers(raw: string): Post[] {
@@ -282,7 +282,7 @@ export default function PostsPage() {
           </span>
           <h1 className="fp-title">
             {t('Outline Keys များ', 'Outline Keys')}<br />
-            <span className="fp-title-gradient">{t('Admin မှ ( ဖွင့် ) ထားပါသည်', 'Opened by Admin')}</span>
+            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Opened by Admin')}</span>
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
