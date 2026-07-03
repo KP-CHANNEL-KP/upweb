@@ -44,7 +44,7 @@ export default function NewsPage() {
             {t('သတင်းများ', 'News')}
           </span>
           <h1 className="fp-title">
-            {t('KP Channel', 'KP Channel')}<br />
+            {t('KP Channel', 'KP VPN WEB')}<br />
             <span className="fp-title-gradient">{t('သတင်းနှင့် အပ်ဒိတ်များ', 'News & Updates')}</span>
           </h1>
         </div>
