@@ -215,7 +215,7 @@ export default function FreePage() {
               {loading ? <span className="fp-spinner" /> : `✓ ${t('အတည်ပြုမည်', 'Verify')}`}
             </button>
             <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
-            
+            <a
               href="https://t.me/KP_WEB_KEY_BOT"
               target="_blank"
               rel="noopener noreferrer"
