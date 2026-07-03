@@ -3,11 +3,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  webpack: (config: any, { isServer }: { isServer: boolean }) => {
+  webpack: (config, { isServer }) => {
     if (isServer) {
-      // cloudflare:sockets ဟာ Cloudflare Workers runtime ကနေ built-in
-      // ပေးတဲ့ module ဖြစ်လို့ webpack ကို bundle မလုပ်ဖို့ external ထားရမယ်
-      config.externals = [...(config.externals || []), 'cloudflare:sockets'];
+      // cloudflare:sockets ကို webpack ကနေ bundle မလုပ်ဘဲ external
+      // အနေနဲ့ ထားရမယ် — externalsType: 'commonjs' ကို ထပ်ထည့်ရမှ
+      // valid JS output ဖြစ်မယ် (colon ပါတဲ့ module name ကြောင့်)
+      config.externals.push('cloudflare:sockets');
+      config.externalsType = 'commonjs';
     }
     return config;
   },
