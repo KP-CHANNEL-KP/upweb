@@ -40,7 +40,7 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
 // ဒါကြောင့် "ms နည်းလေ လိုင်းကောင်းလေ" ဆိုတဲ့ relative feel ကို ထိန်းထားပြီး
 // ပြသမယ့် ဂဏန်းကိုပဲ 10ပုံ 1ပုံ လျှော့ပြပါမယ် (comparison logic အတွက်တော့
 // raw value ကိုပဲ သုံးမယ် — ဂဏန်းအတိအကျ scale ချကြည့်ချင်ရင် ဒီ constant ကို ပြင်ပါ)
-const DISPLAY_SCALE = 0.1;
+const DISPLAY_SCALE = 0.01;
 
 function scaleForDisplay(rawMs: number): number {
   return Math.max(1, Math.round(rawMs * DISPLAY_SCALE));
