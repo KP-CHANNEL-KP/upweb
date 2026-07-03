@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import net from 'net';
+import { connect } from 'cloudflare:sockets';
+
+export const runtime = 'edge';
 
 interface PingTarget {
   host: string;
@@ -15,37 +16,30 @@ interface PingResult {
 const TIMEOUT_MS = 4000;
 const CONCURRENCY = 10;
 
-// တစ်ခု ချင်း TCP socket connect လုပ်ပြီး latency တိုင်းမယ်
-function checkTcp(host: string, port: number): Promise<number> {
-  return new Promise((resolve) => {
-    const start = Date.now();
-    const socket = new net.Socket();
-    let settled = false;
+// Cloudflare TCP Sockets API နဲ့ connect လုပ်ကြည့်မယ်
+async function checkTcp(host: string, port: number): Promise<number> {
+  const start = Date.now();
+  let socket: ReturnType<typeof connect> | null = null;
 
-    const finish = (result: number) => {
-      if (settled) return;
-      settled = true;
-      socket.destroy();
-      resolve(result);
-    };
+  try {
+    socket = connect({ hostname: host, port });
 
-    socket.setTimeout(TIMEOUT_MS);
-
-    socket.once('connect', () => {
-      finish(Date.now() - start);
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS);
     });
 
-    socket.once('timeout', () => {
-      finish(-1);
-    });
+    // socket.opened resolves ရင် connect success
+    await Promise.race([socket.opened, timeoutPromise]);
 
-    socket.once('error', () => {
-      // Connection refused = server up but port closed => count as dead
-      finish(-1);
-    });
-
-    socket.connect(port, host);
-  });
+    const ping = Date.now() - start;
+    socket.close().catch(() => {});
+    return ping;
+  } catch {
+    if (socket) {
+      socket.close().catch(() => {});
+    }
+    return -1;
+  }
 }
 
 // Chunk helper — concurrency ကန့်သတ်ဖို့
@@ -55,13 +49,13 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const body = (await req.json()) as { targets: PingTarget[] };
     const targets = body.targets;
 
     if (!Array.isArray(targets) || targets.length === 0) {
-      return NextResponse.json({ error: 'targets array required' }, { status: 400 });
+      return Response.json({ error: 'targets array required' }, { status: 400 });
     }
 
     // safety cap — endpoint abuse မဖြစ်အောင်
@@ -80,8 +74,8 @@ export async function POST(req: NextRequest) {
       results.push(...chunkResults);
     }
 
-    return NextResponse.json({ results });
+    return Response.json({ results });
   } catch (err) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    return Response.json({ error: 'Invalid request' }, { status: 400 });
   }
 }
