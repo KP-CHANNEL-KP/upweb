@@ -26,7 +26,7 @@ export default function NewsPage() {
 
   useEffect(() => {
     fetch('/api/news')
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<NewsItem[]>)
       .then((data) => setNews(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
