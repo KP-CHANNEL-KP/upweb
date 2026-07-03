@@ -2,8 +2,12 @@ import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export const runtime = 'edge';
 
+interface Env {
+  ADMIN_PASSWORD: string;
+}
+
 export async function POST(request: Request) {
-  const { env } = getRequestContext() as { env: CloudflareEnv };
+  const { env } = getRequestContext() as { env: Env };
   const body = (await request.json()) as { password?: string };
 
   if (body.password && body.password === env.ADMIN_PASSWORD) {
