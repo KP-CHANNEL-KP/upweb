@@ -10,6 +10,7 @@ const navItems = [
   { my: 'Thai Servers', en: 'Thai Servers', href: '/thai' },
   { my: 'VPN Files', en: 'VPN Files', href: '/vpn' },
   { my: 'ဝယ်ယူရန်', en: 'Buy', href: '/buy' },
+  { my: 'News', en: 'News', href: '/news' },
   { my: 'ကျွန်ုပ်၏အကောင့်', en: 'My Account', href: '/topup' },
 ];
 
