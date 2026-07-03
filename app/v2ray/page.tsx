@@ -185,7 +185,7 @@ export default function FreePage() {
           </span>
           <h1 className="fp-title">
             {t('V2ray Keys များ', 'V2ray Keys')}<br />
-            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Opened by Admin')}</span>
+            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Closed by Admin')}</span>
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
