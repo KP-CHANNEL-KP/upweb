@@ -2,10 +2,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
+import { useLanguage } from '../components/LanguageProvider';
 
 interface KeyItem { key: string; ping: number; }
 
-// Host:Port ကို trojan key ထဲကနေ ဆွဲထုတ်မယ်
 function extractHostPort(trojanKey: string): { host: string; port: number } | null {
   try {
     const match = trojanKey.match(/trojan:\/\/[^@]+@([^:/?#]+):(\d+)/);
@@ -16,8 +16,6 @@ function extractHostPort(trojanKey: string): { host: string; port: number } | nu
   }
 }
 
-// Browser ကနေ တိုက်ရိုက် ping စစ်မယ်
-// no-cors fetch — CORS error = server alive, AbortError = timeout/dead
 async function checkPingBrowser(host: string, port: number): Promise<number> {
   const start = performance.now();
   const controller = new AbortController();
@@ -34,22 +32,19 @@ async function checkPingBrowser(host: string, port: number): Promise<number> {
     return Math.round(performance.now() - start);
   } catch (e: any) {
     clearTimeout(timer);
-    if (e?.name === 'AbortError') return -1;   // Timeout
-    // TypeError/NetworkError = server ကနေ respond လာတယ် (CORS block) = alive
+    if (e?.name === 'AbortError') return -1;
     return Math.round(performance.now() - start);
   }
 }
 
-// Ping badge
-function getPingBadge(ping: number): { label: string; className: string } {
-  if (ping === -2)  return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
+function getPingBadge(ping: number, t: (my: string, en: string) => string): { label: string; className: string } {
+  if (ping === -2)  return { label: `⏳ ${t('စစ်နေသည်', 'Checking')}`, className: 'fp-ping-checking' };
   if (ping === -1)  return { label: '⚫ Timeout',    className: 'fp-ping-dead' };
   if (ping < 100)   return { label: `🟢 ${ping}ms`,  className: 'fp-ping-excellent' };
   if (ping < 300)   return { label: `🟡 ${ping}ms`,  className: 'fp-ping-good' };
   return              { label: `🔴 ${ping}ms`,        className: 'fp-ping-slow' };
 }
 
-// Chunk helper
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -57,6 +52,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 }
 
 export default function FreePage() {
+  const { t } = useLanguage();
   const [keys, setKeys] = useState<KeyItem[]>([]);
   const [searchTerm, setSearchTerm]   = useState('');
   const [verifyInput, setVerifyInput] = useState('');
@@ -66,25 +62,21 @@ export default function FreePage() {
   const [keysLoading, setKeysLoading] = useState(false);
   const [pingDone, setPingDone]       = useState(false);
 
-  // Step 1: Keys ကို server ကနေ ယူမယ် (ping မပါ)
   const loadKeys = useCallback(async () => {
     setKeysLoading(true);
     setPingDone(false);
     try {
       const res = await fetch('https://webbot.kpchannel.cc.cd/fetch-keys');
       const rawKeys = (await res.json()) as string[];
-      // ping = -2 → "စစ်နေသည်" placeholder
       setKeys(rawKeys.map((k) => ({ key: k, ping: -2 })));
     } catch {
-      toast.error('VPN Keys များ ရယူ၍ မရပါ');
+      toast.error(t('VPN Keys များ ရယူ၍ မရပါ', 'Failed to fetch VPN keys'));
     } finally {
       setKeysLoading(false);
     }
-  }, []);
+  }, [t]);
 
-  // Step 2: Browser ကနေ ping စစ်မယ် — chunk 5 စီ
   const runBrowserPing = useCallback(async (rawKeys: string[]) => {
-    // Unique host:port map — တူတဲ့ IP ကို တစ်ကြိမ်ပဲ စစ်မယ်
     const ipPingMap = new Map<string, number>();
     const seen      = new Set<string>();
     const toCheck: Array<{ host: string; port: number; ipKey: string }> = [];
@@ -99,7 +91,6 @@ export default function FreePage() {
       }
     }
 
-    // Chunk 5 စီ — browser thread မထိခိုက်အောင်
     const chunks = chunkArray(toCheck, 5);
     for (const chunk of chunks) {
       await Promise.all(
@@ -108,7 +99,6 @@ export default function FreePage() {
           ipPingMap.set(ipKey, ping);
         })
       );
-      // Chunk တစ်ခုပြီးတိုင်း UI update လုပ်မယ် — progressive display
       setKeys((prev) =>
         prev.map((item) => {
           const parsed = extractHostPort(item.key);
@@ -120,7 +110,6 @@ export default function FreePage() {
       );
     }
 
-    // Sort: ping နည်းတာ အပေါ် / timeout တွေ အောက်
     setKeys((prev) =>
       [...prev].sort((a, b) => {
         if (a.ping === -1 && b.ping === -1) return 0;
@@ -135,7 +124,6 @@ export default function FreePage() {
     setPingDone(true);
   }, []);
 
-  // Keys ပြီးတာနဲ့ ping စစ်မယ်
   useEffect(() => {
     if (!isVerified) return;
     loadKeys();
@@ -143,7 +131,6 @@ export default function FreePage() {
 
   useEffect(() => {
     if (keys.length === 0 || keysLoading) return;
-    // ping = -2 ပါနေသေးမယ်ဆိုရင် ping run မယ်
     if (keys.some((k) => k.ping === -2)) {
       runBrowserPing(keys.map((k) => k.key));
     }
@@ -170,10 +157,10 @@ export default function FreePage() {
       if (data.valid) {
         setIsVerified(true);
       } else {
-        setMessage(data.message || 'Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်');
+        setMessage(data.message || t('Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်', 'Invalid or already-used key'));
       }
     } catch {
-      setMessage('Connection Error ဖြစ်နေသည်');
+      setMessage(t('Connection Error ဖြစ်နေသည်', 'Connection error'));
     } finally {
       setLoading(false);
     }
@@ -197,11 +184,11 @@ export default function FreePage() {
             Free VPN Keys
           </span>
           <h1 className="fp-title">
-            V2ray Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ( ဖွင့် ) ထားပါသည်</span>
+            {t('V2ray Keys များ', 'V2ray Keys')}<br />
+            <span className="fp-title-gradient">{t('Admin မှ ( ဖွင့် ) ထားပါသည်', 'Opened by Admin')}</span>
           </h1>
           <p className="fp-sub">
-            ဝယ်ယူလိုပါက →{' '}
+            {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
             <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
               TG: @KPBYKP
             </a>{' '}
@@ -213,28 +200,28 @@ export default function FreePage() {
         {!isVerified ? (
           <div className="fp-gate-card">
             <div className="fp-gate-icon">🔐</div>
-            <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
+            <h2 className="fp-gate-title">{t('Access Key လိုအပ်သည်', 'Access Key Required')}</h2>
             <p className="fp-gate-desc">
-              V2ray Keys များ ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ
+              {t('V2ray Keys များ ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ', 'Get an Access Key from the Telegram Bot to view V2ray Keys')}
             </p>
             <input
               className="fp-input"
-              placeholder="Access Key ထည့်ပါ..."
+              placeholder={t('Access Key ထည့်ပါ...', 'Enter Access Key...')}
               value={verifyInput}
               onChange={(e) => setVerifyInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
             />
             <button onClick={handleVerify} disabled={loading} className="fp-btn-primary">
-              {loading ? <span className="fp-spinner" /> : '✓ အတည်ပြုမည်'}
+              {loading ? <span className="fp-spinner" /> : `✓ ${t('အတည်ပြုမည်', 'Verify')}`}
             </button>
-            <div className="fp-divider"><span>သို့မဟုတ်</span></div>
-            <a
+            <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
+            
               href="https://t.me/KP_WEB_KEY_BOT"
               target="_blank"
               rel="noopener noreferrer"
               className="fp-btn-tg"
             >
-              🚀 Telegram Bot မှ Key ယူရန်
+              🚀 {t('Telegram Bot မှ Key ယူရန်', 'Get Key from Telegram Bot')}
             </a>
             {message && (
               <div className="fp-error"><span>⚠️</span> {message}</div>
@@ -242,17 +229,16 @@ export default function FreePage() {
           </div>
         ) : (
           <>
-            {/* Stats Bar */}
             {!keysLoading && keys.length > 0 && (
               <div className="fp-stats-bar">
-                <span className="fp-stat fp-stat-total">🔑 စုစုပေါင်း {keys.length} ခု</span>
-                <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} ခု</span>
-                <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} ခု</span>
+                <span className="fp-stat fp-stat-total">🔑 {t('စုစုပေါင်း', 'Total')} {keys.length} {t('ခု', '')}</span>
+                <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} {t('ခု', '')}</span>
+                <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} {t('ခု', '')}</span>
                 {checkingCount > 0 && (
-                  <span className="fp-stat fp-stat-checking">⏳ စစ်နေသည် {checkingCount} ခု</span>
+                  <span className="fp-stat fp-stat-checking">⏳ {t('စစ်နေသည်', 'Checking')} {checkingCount} {t('ခု', '')}</span>
                 )}
                 {pingDone && (
-                  <span className="fp-stat fp-stat-done">✅ Ping စစ်ပြီး</span>
+                  <span className="fp-stat fp-stat-done">✅ {t('Ping စစ်ပြီး', 'Ping check done')}</span>
                 )}
               </div>
             )}
@@ -261,24 +247,24 @@ export default function FreePage() {
               <span className="fp-search-icon">🔎</span>
               <input
                 className="fp-search"
-                placeholder="ရှာရန် (ဥပမာ - Server 1)..."
+                placeholder={t('ရှာရန် (ဥပမာ - Server 1)...', 'Search (e.g. Server 1)...')}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <p className="fp-count">Keys {filtered.length} ခု ရှိသည်</p>
+            <p className="fp-count">Keys {filtered.length} {t('ခု ရှိသည်', 'found')}</p>
 
             {keysLoading ? (
               <div className="fp-loading">
                 <div className="fp-loading-dots">
                   <span /><span /><span />
                 </div>
-                <p>Keys များ ရယူနေသည်...</p>
+                <p>{t('Keys များ ရယူနေသည်...', 'Fetching keys...')}</p>
               </div>
             ) : (
               <div className="fp-keys-grid">
                 {filtered.map((item, index) => {
-                  const badge  = getPingBadge(item.ping);
+                  const badge  = getPingBadge(item.ping, t);
                   const isDead = item.ping === -1;
                   const isChecking = item.ping === -2;
                   return (
@@ -304,9 +290,9 @@ export default function FreePage() {
                         disabled={isDead || isChecking}
                         className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
                       >
-                        {isDead     ? '⚫ Timeout — မသုံးနိုင်ပါ'
-                         : isChecking ? '⏳ Ping စစ်နေသည်...'
-                         : '📋 Copy Key'}
+                        {isDead     ? `⚫ Timeout — ${t('မသုံးနိုင်ပါ', 'unusable')}`
+                         : isChecking ? `⏳ ${t('Ping စစ်နေသည်...', 'Checking ping...')}`
+                         : `📋 ${t('Copy Key', 'Copy Key')}`}
                       </button>
                       <div className="fp-banner-wrap">
                         <Banner />

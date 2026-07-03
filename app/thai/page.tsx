@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
+import { useLanguage } from '../components/LanguageProvider';
 
 const posts = [
   { num: '၀၁', title: 'Dtac', date: 'Premium High Speed', desc: 'No Data' },
@@ -10,6 +11,7 @@ const posts = [
 ];
 
 export default function PostsPage() {
+  const { t } = useLanguage();
   const [isVerified, setIsVerified] = useState(false);
   const [verifyInput, setVerifyInput] = useState('');
   const [message, setMessage] = useState('');
@@ -17,7 +19,7 @@ export default function PostsPage() {
 
   const handleCopy = (desc: string) => {
     navigator.clipboard.writeText(desc);
-    toast.success('Key ကို Copy ယူပြီးပါပြီ!', {
+    toast.success(t('Key ကို Copy ယူပြီးပါပြီ!', 'Key copied!'), {
       style: { background: '#7C3AED', color: '#fff', borderRadius: '10px' },
     });
   };
@@ -35,14 +37,14 @@ export default function PostsPage() {
       const data = (await res.json()) as { valid: boolean; message?: string };
       if (data.valid) {
         setIsVerified(true);
-        toast.success('အတည်ပြုပြီးပါပြီ!', {
+        toast.success(t('အတည်ပြုပြီးပါပြီ!', 'Verified!'), {
           style: { background: '#7C3AED', color: '#fff', borderRadius: '10px' },
         });
       } else {
-        setMessage(data.message || 'Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်');
+        setMessage(data.message || t('Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်', 'Invalid or already-used key'));
       }
     } catch {
-      setMessage('Connection Error ဖြစ်နေသည်');
+      setMessage(t('Connection Error ဖြစ်နေသည်', 'Connection error'));
     } finally {
       setLoading(false);
     }
@@ -55,18 +57,17 @@ export default function PostsPage() {
       <div className="fp-glow" />
 
       <div className="fp-container">
-        {/* Header */}
         <div className="fp-header">
           <span className="fp-badge">
             <span className="fp-badge-dot" />
             Outline VPN Keys
           </span>
           <h1 className="fp-title">
-            Thai Server Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ( ပိတ် ) ထားပါသည်</span>
+            {t('Thai Server Keys များ', 'Thai Server Keys')}<br />
+            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Closed by Admin')}</span>
           </h1>
           <p className="fp-sub">
-            ဝယ်ယူလိုပါက →{' '}
+            {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
             <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
               TG: @KPBYKP
             </a>{' '}
@@ -77,25 +78,25 @@ export default function PostsPage() {
         {!isVerified ? (
           <div className="fp-gate-card">
             <div className="fp-gate-icon">🔐</div>
-            <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
-            <p className="fp-gate-desc">Thai Server keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
+            <h2 className="fp-gate-title">{t('Access Key လိုအပ်သည်', 'Access Key Required')}</h2>
+            <p className="fp-gate-desc">{t('Thai Server keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ', 'Get an Access Key from the Telegram Bot to view all Thai Server keys')}</p>
 
             <input
               className="fp-input"
-              placeholder="Access Key ထည့်ပါ..."
+              placeholder={t('Access Key ထည့်ပါ...', 'Enter Access Key...')}
               value={verifyInput}
               onChange={(e) => setVerifyInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
             />
 
             <button onClick={handleVerify} disabled={loading} className="fp-btn-primary">
-              {loading ? <span className="fp-spinner" /> : '✓ အတည်ပြုမည်'}
+              {loading ? <span className="fp-spinner" /> : `✓ ${t('အတည်ပြုမည်', 'Verify')}`}
             </button>
 
-            <div className="fp-divider"><span>သို့မဟုတ်</span></div>
+            <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
 
             <a href="https://t.me/KP_WEB_KEY_BOT" target="_blank" rel="noopener noreferrer" className="fp-btn-tg">
-              🚀 Telegram Bot မှ Key ယူရန်
+              🚀 {t('Telegram Bot မှ Key ယူရန်', 'Get Key from Telegram Bot')}
             </a>
 
             {message && (
@@ -116,7 +117,7 @@ export default function PostsPage() {
                       <p className="po-date">{post.date}</p>
                     </div>
                   </div>
-                  <span className="fp-status fp-status-active">● Active</span>
+                  <span className="fp-status fp-status-active">● {t('အသုံးပြုနိုင်သည်', 'Active')}</span>
                 </div>
 
                 <div className="fp-key-box">
@@ -124,7 +125,7 @@ export default function PostsPage() {
                 </div>
 
                 <button onClick={() => handleCopy(post.desc)} className="fp-copy-btn">
-                  📋 Copy Key
+                  📋 {t('Copy Key', 'Copy Key')}
                 </button>
               </div>
             ))}

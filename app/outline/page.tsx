@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 import { PUBLIC_SERVERS_RAW } from '../lib/publicServersRaw';
+import { useLanguage } from '../components/LanguageProvider';
 
 type Source = 'private' | 'public';
 
@@ -15,14 +16,11 @@ interface Post {
 }
 
 interface PostWithPing extends Post {
-  // Server (Vercel /api/ping) ကနေ real TCP connect လုပ်ပြီး ရလာတဲ့ authoritative value
-  // -2 = checking, -1 = timeout/dead, >=0 = ms
   ping: number;
-  country: string;     // ဥပမာ - "Singapore" — backend ကနေ auto-detect လုပ်ပေးတာ
-  countryCode: string; // ဥပမာ - "SG" — flag emoji ဆောက်ဖို့ သုံးမယ်
+  country: string;
+  countryCode: string;
 }
 
-// ===== 1. သင့်ကိုယ်ပိုင် (Private) Outline Keys =====
 const privatePosts: Post[] = [
   { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbnYwN3VvOWkwdW1lajc4@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-1', source: 'private' },
   { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmZHR5OTloY2NuZzMydW5l@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-2', source: 'private' },
@@ -31,7 +29,6 @@ const privatePosts: Post[] = [
   { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbWN4aWhlOXI0aDVhaG1t@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-5', source: 'private' },
 ];
 
-// ===== 2. Public Servers (servers.json ထဲက raw ss:// list ကို parse လုပ်တာ) =====
 function parsePublicServers(raw: string): Post[] {
   const lines = raw
     .split('\n')
@@ -45,7 +42,6 @@ function parsePublicServers(raw: string): Post[] {
       try {
         title = decodeURIComponent(line.slice(hashIdx + 1).replace(/\+/g, ' ')) || title;
       } catch {
-        // decodeURIComponent fail ရင် raw fragment ကိုပဲ သုံးမယ်
         title = line.slice(hashIdx + 1).replace(/\+/g, ' ') || title;
       }
     }
@@ -60,12 +56,8 @@ function parsePublicServers(raw: string): Post[] {
 }
 
 const publicPosts: Post[] = parsePublicServers(PUBLIC_SERVERS_RAW);
-
-// အားလုံးပေါင်း — ping စစ်ဖို့ / host,port extract ဖို့ တစ်ခုတည်း loop ပတ်ဖို့ သုံးမယ်
 const allPosts: Post[] = [...privatePosts, ...publicPosts];
 
-// ss:// key ထဲကနေ Host:Port ဆွဲထုတ်မယ်
-// Format: ss://BASE64(method:password)@host:port?type=tcp#name
 function extractHostPort(ssKey: string): { host: string; port: number } | null {
   try {
     const match = ssKey.match(/ss:\/\/[^@]+@([^:/?#]+):(\d+)/);
@@ -76,26 +68,19 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
-// ISO country code (ဥပမာ "SG") ကို flag icon (SVG) URL အဖြစ် ပြောင်းမယ်
-// Windows/Chrome ဟာ flag emoji ကို native render မလုပ်ဘဲ "SG" စာလုံးအဖြစ်ပဲ
-// fallback ပြတတ်လို့ (macOS/iOS/Android မှာတော့ ပုံမှန် ပေါ်ပါတယ်) — OS-independent
-// ဖြစ်အောင် flagcdn.com ကနေ SVG image ကို တိုက်ရိုက် ခေါ်သုံးမယ်
 function countryCodeToFlagUrl(countryCode: string): string | null {
   if (!countryCode || countryCode.length !== 2) return null;
   return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
 
-// Ping badge — server (Vercel) ကနေ real TCP connect တိုင်းထားတဲ့ ms ကို တိုက်ရိုက်ပြမယ်
-// ဒါက protocol (ss / trojan / vmess) ဘာဖြစ်ဖြစ် တိကျပါတယ် — TCP layer ကိုပဲ တိုင်းလို့ပါ
-function getPingBadge(ping: number): { label: string; className: string } {
-  if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
+function getPingBadge(ping: number, t: (my: string, en: string) => string): { label: string; className: string } {
+  if (ping === -2) return { label: `⏳ ${t('စစ်နေသည်', 'Checking')}`, className: 'fp-ping-checking' };
   if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
   if (ping < 150) return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
   if (ping < 400) return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
   return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
 }
 
-// Ping-based sort: online (ping ascending) > checking > dead/timeout
 function sortByPing(a: PostWithPing, b: PostWithPing): number {
   const rank = (p: number) => (p >= 0 ? 0 : p === -2 ? 1 : 2);
   const ra = rank(a.ping);
@@ -106,6 +91,7 @@ function sortByPing(a: PostWithPing, b: PostWithPing): number {
 }
 
 export default function PostsPage() {
+  const { t } = useLanguage();
   const [isVerified, setIsVerified] = useState(false);
   const [verifyInput, setVerifyInput] = useState('');
   const [message, setMessage] = useState('');
@@ -116,13 +102,8 @@ export default function PostsPage() {
   );
   const [pingDone, setPingDone] = useState(false);
 
-  // Server-side /api/ping endpoint (Vercel, Node runtime) ကို ခေါ်ပြီး
-  // real TCP ping စစ်မယ် — Cloudflare Pages Functions မှာ raw TCP socket
-  // ဖွင့်လို့ မရလို့ ဒီ ping logic ကို Vercel host ခွဲထားတာ ဖြစ်ပါတယ်
   const runServerPing = useCallback(async () => {
     setPingDone(false);
-
-    // Unique host:port — dedupe ပြီး api ကို တစ်ခါတည်း ပို့မယ် (private + public အားလုံး)
     const seen = new Set<string>();
     const targets: { host: string; port: number }[] = [];
 
@@ -142,7 +123,6 @@ export default function PostsPage() {
     }
 
     try {
-      // Vercel ပေါ်မှာ သီးသန့် host ထားတဲ့ ping API
       const PING_API_URL = 'https://web-p-nu.vercel.app/api/ping';
       const res = await fetch(PING_API_URL, {
         method: 'POST',
@@ -174,15 +154,13 @@ export default function PostsPage() {
         })
       );
     } catch {
-      toast.error('Ping စစ်ရန် မအောင်မြင်ပါ');
-      // Fetch fail ရင် အားလုံးကို dead (-1) အနေနဲ့ သတ်မှတ်မယ်
+      toast.error(t('Ping စစ်ရန် မအောင်မြင်ပါ', 'Failed to check ping'));
       setKeys((prev) => prev.map((item) => ({ ...item, ping: -1 })));
     } finally {
       setPingDone(true);
     }
-  }, []);
+  }, [t]);
 
-  // Verify ပြီးတာနဲ့ ping စစ်မယ်
   useEffect(() => {
     if (!isVerified) return;
     runServerPing();
@@ -190,7 +168,7 @@ export default function PostsPage() {
 
   const handleCopy = (desc: string) => {
     navigator.clipboard.writeText(desc);
-    toast.success('Key ကို Copy ယူပြီးပါပြီ!', {
+    toast.success(t('Key ကို Copy ယူပြီးပါပြီ!', 'Key copied!'), {
       style: { background: '#7C3AED', color: '#fff', borderRadius: '10px' },
     });
   };
@@ -208,14 +186,14 @@ export default function PostsPage() {
       const data = (await res.json()) as { valid: boolean; message?: string };
       if (data.valid) {
         setIsVerified(true);
-        toast.success('အတည်ပြုပြီးပါပြီ!', {
+        toast.success(t('အတည်ပြုပြီးပါပြီ!', 'Verified!'), {
           style: { background: '#7C3AED', color: '#fff', borderRadius: '10px' },
         });
       } else {
-        setMessage(data.message || 'Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်');
+        setMessage(data.message || t('Key မမှန်ပါ သို့မဟုတ် အသုံးပြုပြီးသား ဖြစ်နေသည်', 'Invalid or already-used key'));
       }
     } catch {
-      setMessage('Connection Error ဖြစ်နေသည်');
+      setMessage(t('Connection Error ဖြစ်နေသည်', 'Connection error'));
     } finally {
       setLoading(false);
     }
@@ -225,12 +203,11 @@ export default function PostsPage() {
   const timeoutCount = keys.filter((k) => k.ping === -1).length;
   const checkingCount = keys.filter((k) => k.ping === -2).length;
 
-  // Private / Public နှစ်ခုကို ခွဲပြီး တစ်ခုစီအတွင်း ping အနိမ့်ဆုံးကို အပေါ်ဆုံးမှာ စီမယ်
   const privateKeys = keys.filter((k) => k.source === 'private').sort(sortByPing);
   const publicKeys = keys.filter((k) => k.source === 'public').sort(sortByPing);
 
   const renderKeyCard = (post: PostWithPing, index: number) => {
-    const badge = getPingBadge(post.ping);
+    const badge = getPingBadge(post.ping, t);
     const isDead = post.ping === -1;
     const isChecking = post.ping === -2;
     return (
@@ -282,10 +259,10 @@ export default function PostsPage() {
           className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
         >
           {isDead
-            ? '⚫ Timeout — မသုံးနိုင်ပါ'
+            ? `⚫ Timeout — ${t('မသုံးနိုင်ပါ', 'unusable')}`
             : isChecking
-            ? '⏳ Ping စစ်နေသည်...'
-            : '📋 Copy Key'}
+            ? `⏳ ${t('Ping စစ်နေသည်...', 'Checking ping...')}`
+            : `📋 ${t('Copy Key', 'Copy Key')}`}
         </button>
       </div>
     );
@@ -298,18 +275,17 @@ export default function PostsPage() {
       <div className="fp-glow" />
 
       <div className="fp-container">
-        {/* Header */}
         <div className="fp-header">
           <span className="fp-badge">
             <span className="fp-badge-dot" />
             Outline VPN Keys
           </span>
           <h1 className="fp-title">
-            Outline Keys များ<br />
-            <span className="fp-title-gradient">Admin မှ ( ဖွင့် ) ထားပါသည်</span>
+            {t('Outline Keys များ', 'Outline Keys')}<br />
+            <span className="fp-title-gradient">{t('Admin မှ ( ဖွင့် ) ထားပါသည်', 'Opened by Admin')}</span>
           </h1>
           <p className="fp-sub">
-            ဝယ်ယူလိုပါက →{' '}
+            {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
             <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
               TG: @KPBYKP
             </a>{' '}
@@ -320,25 +296,25 @@ export default function PostsPage() {
         {!isVerified ? (
           <div className="fp-gate-card">
             <div className="fp-gate-icon">🔐</div>
-            <h2 className="fp-gate-title">Access Key လိုအပ်သည်</h2>
-            <p className="fp-gate-desc">Outline keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ</p>
+            <h2 className="fp-gate-title">{t('Access Key လိုအပ်သည်', 'Access Key Required')}</h2>
+            <p className="fp-gate-desc">{t('Outline keys များအားလုံးကို ကြည့်ရှုရန် Telegram Bot မှ Access Key သွားယူပါ', 'Get an Access Key from the Telegram Bot to view all Outline keys')}</p>
 
             <input
               className="fp-input"
-              placeholder="Access Key ထည့်ပါ..."
+              placeholder={t('Access Key ထည့်ပါ...', 'Enter Access Key...')}
               value={verifyInput}
               onChange={(e) => setVerifyInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
             />
 
             <button onClick={handleVerify} disabled={loading} className="fp-btn-primary">
-              {loading ? <span className="fp-spinner" /> : '✓ အတည်ပြုမည်'}
+              {loading ? <span className="fp-spinner" /> : `✓ ${t('အတည်ပြုမည်', 'Verify')}`}
             </button>
 
-            <div className="fp-divider"><span>သို့မဟုတ်</span></div>
+            <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
 
             <a href="https://t.me/KP_WEB_KEY_BOT" target="_blank" rel="noopener noreferrer" className="fp-btn-tg">
-              🚀 Telegram Bot မှ Key ယူရန်
+              🚀 {t('Telegram Bot မှ Key ယူရန်', 'Get Key from Telegram Bot')}
             </a>
 
             {message && (
@@ -347,26 +323,23 @@ export default function PostsPage() {
           </div>
         ) : (
           <>
-            {/* Stats Bar */}
             <div className="fp-stats-bar">
-              <span className="fp-stat fp-stat-total">🔑 စုစုပေါင်း {keys.length} ခု</span>
-              <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} ခု</span>
-              <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} ခု</span>
+              <span className="fp-stat fp-stat-total">🔑 {t('စုစုပေါင်း', 'Total')} {keys.length} {t('ခု', '')}</span>
+              <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} {t('ခု', '')}</span>
+              <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} {t('ခု', '')}</span>
               {checkingCount > 0 && (
-                <span className="fp-stat fp-stat-checking">⏳ စစ်နေသည် {checkingCount} ခု</span>
+                <span className="fp-stat fp-stat-checking">⏳ {t('စစ်နေသည်', 'Checking')} {checkingCount} {t('ခု', '')}</span>
               )}
-              {pingDone && <span className="fp-stat fp-stat-done">✅ Ping စစ်ပြီး</span>}
+              {pingDone && <span className="fp-stat fp-stat-done">✅ {t('Ping စစ်ပြီး', 'Ping check done')}</span>}
             </div>
 
-            {/* ===== ကိုယ်ပိုင် Servers ===== */}
             <div className="fp-section">
-              <h2 className="fp-section-title">🔒 ကိုယ်ပိုင် Servers ({privateKeys.length})</h2>
+              <h2 className="fp-section-title">🔒 {t('ကိုယ်ပိုင် Servers', 'Private Servers')} ({privateKeys.length})</h2>
               <div className="fp-keys-grid">
                 {privateKeys.map((post, index) => renderKeyCard(post, index))}
               </div>
             </div>
 
-            {/* ===== Public Servers ===== */}
             <div className="fp-section">
               <h2 className="fp-section-title">🌐 Public Servers ({publicKeys.length})</h2>
               <div className="fp-keys-grid">

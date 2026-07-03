@@ -10,6 +10,10 @@ import NotificationWrapper from './components/NotificationWrapper';
 import InstallButton from './components/InstallButton';
 import { ThemeProvider } from './components/ThemeProvider';
 import ThemeToggle from './components/ThemeToggle';
+import { LanguageProvider } from './components/LanguageProvider';
+import LanguageToggle from './components/LanguageToggle';
+import NavLinks from './components/NavLinks';
+import FooterText from './components/FooterText';
 
 export const metadata: Metadata = {
   title: 'KP Channel - Premium VPN Servers & Free Internet',
@@ -17,17 +21,6 @@ export const metadata: Metadata = {
   description: 'အရည်အသွေးမြင့်မားပြီး မြန်ဆန်သော VPN ဖိုင်များကို ဤနေရာတွင် အခမဲ့ ရယူနိုင်ပါသည်။',
   viewport: 'width=device-width, initial-scale=1',
 };
-
-const navItems = [
-  { name: 'Home',         href: '/' },
-  { name: 'Outline Keys', href: '/outline' },
-  { name: 'Starlink',   href: '/starlink' },
-  { name: 'V2ray Keys',   href: '/v2ray' },
-  { name: 'Thai Servers',   href: '/thai' },
-  { name: 'VPN Files',    href: '/vpn' },
-  { name: 'Buy',          href: '/buy' },
-  { name: 'My Account',   href: '/topup' },
-];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -39,37 +32,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <ThemeProvider>
-          <ClientWrapper>
-            <NotificationWrapper>
-              <header className="kp-header">
-                <div className="kp-header-inner">
-                  <HeaderAnimation />
-                  <nav className="kp-nav">
-                    {navItems.map((item) => (
-                      <a key={item.name} href={item.href} className="kp-nav-link">
-                        {item.name}
-                      </a>
-                    ))}
-                    {/* ── Theme Toggle ── */}
-                    <ThemeToggle />
-                  </nav>
+        <LanguageProvider>
+          <ThemeProvider>
+            <ClientWrapper>
+              <NotificationWrapper>
+                <header className="kp-header">
+                  <div className="kp-header-inner">
+                    <HeaderAnimation />
+                    <nav className="kp-nav">
+                      <NavLinks />
+                      {/* ── Language Toggle ── */}
+                      <LanguageToggle />
+                      {/* ── Theme Toggle ── */}
+                      <ThemeToggle />
+                    </nav>
+                  </div>
+                </header>
+              </NotificationWrapper>
+
+              <Popup />
+              <main className="kp-page-main">{children}</main>
+              <InstallButton />
+
+              <footer className="kp-footer">
+                <div className="kp-footer-usercount">
+                  <UserCount />
                 </div>
-              </header>
-            </NotificationWrapper>
-
-            <Popup />
-            <main className="kp-page-main">{children}</main>
-            <InstallButton />
-
-            <footer className="kp-footer">
-              <div className="kp-footer-usercount">
-                <UserCount />
-              </div>
-              © 2026 KP VPN WEB • အားလုံးကို ချစ်ခင်စွာဖြင့်
-            </footer>
-          </ClientWrapper>
-        </ThemeProvider>
+                © 2026 KP VPN WEB • <FooterText />
+              </footer>
+            </ClientWrapper>
+          </ThemeProvider>
+        </LanguageProvider>
 
         <Script id="tawk-script" strategy="afterInteractive">
           {`

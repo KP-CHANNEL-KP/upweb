@@ -1224,3 +1224,43 @@ body {
   color: #34D399;
   border: 1px solid rgba(52, 211, 153, 0.25);
 }
+
+/* ဘာသာစကား */
+
+.kp-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #0F172A;
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.kp-lang-toggle:hover {
+  background: #16213A;
+  border-color: rgba(124, 58, 237, 0.6);
+  transform: translateY(-1px);
+}
+
+.kp-lang-toggle:active {
+  transform: translateY(0);
+}
+
+.kp-lang-flag {
+  display: block;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.kp-lang-code {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #A78BFA;
+}

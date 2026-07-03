@@ -1,4 +1,6 @@
+'use client';
 import Link from 'next/link';
+import { useLanguage } from './components/LanguageProvider';
 
 const payments = [
   { name: 'Wave Pay', id: '09966955081', color: '#22D3EE', emoji: '🌊' },
@@ -13,6 +15,8 @@ const socials = [
 ];
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <main className="kp-main">
       {/* ── Hero ── */}
@@ -22,22 +26,26 @@ export default function Home() {
 
         <span className="kp-badge">
           <span className="kp-badge-dot" />
-          Tech Hub &amp; VPN Services
+          {t('နည်းပညာ ဗဟိုချက် နှင့် VPN ဝန်ဆောင်မှု', 'Tech Hub & VPN Services')}
         </span>
 
         <h1 className="kp-title">
-          KP နှင့်အတူ<br />
-          <span className="kp-title-gradient">သာယာသောနေ့များဆီ</span>
+          {t('KP နှင့်အတူ', 'With KP')}<br />
+          <span className="kp-title-gradient">
+            {t('သာယာသောနေ့များဆီ', 'Towards Better Days')}
+          </span>
         </h1>
 
         <p className="kp-sub">
-          လွယ်ကူမြန်ဆန်သော VPN ဝန်ဆောင်မှုများ၊ Free Key များနှင့်
-          နေ့စဉ်အပ်ဒိတ်များကို ဤနေရာမှ ရယူနိုင်သည်။
+          {t(
+            'လွယ်ကူမြန်ဆန်သော VPN ဝန်ဆောင်မှုများ၊ Free Key များနှင့် နေ့စဉ်အပ်ဒိတ်များကို ဤနေရာမှ ရယူနိုင်သည်။',
+            'Get fast, easy VPN services, free keys, and daily updates right here.'
+          )}
         </p>
 
         <div className="kp-cta-row">
           <Link href="/free" className="kp-btn-primary">
-            ⚡ FREE သုံးစရာများ
+            ⚡ {t('FREE သုံးစရာများ', 'FREE Resources')}
           </Link>
           <a
             href="https://t.me/KP_CHANNEL_KP"
@@ -45,15 +53,15 @@ export default function Home() {
             rel="noopener noreferrer"
             className="kp-btn-ghost"
           >
-            ✈️ Telegram ဝင်ရောက်ရန်
+            ✈️ {t('Telegram ဝင်ရောက်ရန်', 'Join Telegram')}
           </a>
         </div>
       </section>
 
       {/* ── Payments ── */}
       <section className="kp-section">
-        <p className="kp-section-label">💳 ငွေပေးချေမှု</p>
-        <h2 className="kp-section-title">Payment နည်းလမ်းများ</h2>
+        <p className="kp-section-label">💳 {t('ငွေပေးချေမှု', 'Payment')}</p>
+        <h2 className="kp-section-title">{t('Payment နည်းလမ်းများ', 'Payment Methods')}</h2>
 
         <div className="kp-pay-grid">
           {payments.map((p) => (
@@ -62,7 +70,9 @@ export default function Home() {
               <span className="kp-pay-emoji">{p.emoji}</span>
               <p className="kp-pay-label">{p.name}</p>
               <p className="kp-pay-num" style={{ color: p.color }}>{p.id}</p>
-              <p className="kp-pay-desc">ငွေလွှဲရန် အထက်ပါနံပါတ်ကိုသာ အသုံးပြုပေးပါ</p>
+              <p className="kp-pay-desc">
+                {t('ငွေလွှဲရန် အထက်ပါနံပါတ်ကိုသာ အသုံးပြုပေးပါ', 'Please use the number above for transfers only')}
+              </p>
             </div>
           ))}
         </div>
@@ -70,8 +80,8 @@ export default function Home() {
 
       {/* ── Socials ── */}
       <section className="kp-section">
-        <p className="kp-section-label">🔗 Social Links</p>
-        <h2 className="kp-section-title">ကျွန်တော်တို့ကို Follow လုပ်ပါ</h2>
+        <p className="kp-section-label">🔗 {t('လူမှုကွန်ရက် လင့်ခ်များ', 'Social Links')}</p>
+        <h2 className="kp-section-title">{t('ကျွန်တော်တို့ကို Follow လုပ်ပါ', 'Follow Us')}</h2>
 
         <div className="kp-soc-grid">
           {socials.map((s) => (
@@ -85,14 +95,14 @@ export default function Home() {
               <span className="kp-soc-emoji">{s.emoji}</span>
               <p className="kp-soc-name">{s.name}</p>
               <p className="kp-soc-handle">{s.handle}</p>
-              <span className="kp-soc-cta">Follow →</span>
+              <span className="kp-soc-cta">{t('Follow လုပ်ရန်', 'Follow')} →</span>
             </a>
           ))}
         </div>
       </section>
 
       <footer className="kp-footer">
-        © 2024 KP Tech Hub · VPN &amp; Tech Services
+        © 2024 KP Tech Hub · {t('VPN နှင့် နည်းပညာ ဝန်ဆောင်မှုများ', 'VPN & Tech Services')}
       </footer>
     </main>
   );
