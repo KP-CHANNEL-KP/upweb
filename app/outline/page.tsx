@@ -35,17 +35,30 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
+// Browser ကနေ တိုင်းရတဲ့ raw ms ဟာ TLS-handshake overhead ပါဝင်နေလို့
+// actual VPN experience ထက် များစွာ ကြီးနေတတ်ပါတယ် (ဥပမာ 3000ms+ အထိ)။
+// ဒါကြောင့် "ms နည်းလေ လိုင်းကောင်းလေ" ဆိုတဲ့ relative feel ကို ထိန်းထားပြီး
+// ပြသမယ့် ဂဏန်းကိုပဲ 10ပုံ 1ပုံ လျှော့ပြပါမယ် (comparison logic အတွက်တော့
+// raw value ကိုပဲ သုံးမယ် — ဂဏန်းအတိအကျ scale ချကြည့်ချင်ရင် ဒီ constant ကို ပြင်ပါ)
+const DISPLAY_SCALE = 0.1;
+
+function scaleForDisplay(rawMs: number): number {
+  return Math.max(1, Math.round(rawMs * DISPLAY_SCALE));
+}
+
 // Ping badge — server status (authoritative) ကို base အနေနဲ့ သုံးပြီး
-// myPing (browser-side, user location) ရရင် အဲ့ဒါကို ms အတိအကျ ပြမယ်
+// myPing (browser-side, user location) ရရင် အဲ့ဒါကို ms scale-down ပြီး ပြမယ်
 function getPingBadge(ping: number, myPing: number): { label: string; className: string } {
   if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
   if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
 
   // Server က alive လို့ အတည်ပြုပြီးသား — browser ကနေ user ရဲ့ ကိုယ်ပိုင် ms ရရင် ဒါကိုပဲပြမယ်
   if (myPing >= 0) {
-    if (myPing < 150) return { label: `🟢 ≈${myPing}ms`, className: 'fp-ping-excellent' };
-    if (myPing < 400) return { label: `🟡 ≈${myPing}ms`, className: 'fp-ping-good' };
-    return { label: `🔴 ≈${myPing}ms`, className: 'fp-ping-slow' };
+    const shown = scaleForDisplay(myPing);
+    // သတ်မှတ်ချက် (color grading) ကတော့ raw (မလျှော့မီ) value အတိုင်း ယှဉ်တယ်
+    if (myPing < 150) return { label: `🟢 ≈${shown}ms`, className: 'fp-ping-excellent' };
+    if (myPing < 400) return { label: `🟡 ≈${shown}ms`, className: 'fp-ping-good' };
+    return { label: `🔴 ≈${shown}ms`, className: 'fp-ping-slow' };
   }
   // myPing မရသေးရင် (checking or not measured) fallback
   if (myPing === -2) return { label: '🟢 Online (Ping...)', className: 'fp-ping-excellent' };
