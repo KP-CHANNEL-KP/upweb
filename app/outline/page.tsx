@@ -261,15 +261,15 @@ export default function PostsPage() {
                       <div className="fp-key-title-row">
                         <span className="po-num">{post.num}</span>
                         <div>
-                          <h3 className="fp-key-name">{post.title}</h3>
-                          <p className="po-date">
-                            {post.date}
-                            {post.country && (
-                              <span className="fp-key-country">
-                                {' '}· {countryCodeToFlag(post.countryCode)} {post.country}
+                          <h3 className="fp-key-name">
+                            {post.title}
+                            {post.countryCode && (
+                              <span className="fp-key-flag" title={post.country}>
+                                {' '}{countryCodeToFlag(post.countryCode)}
                               </span>
                             )}
-                          </p>
+                          </h3>
+                          <p className="po-date">{post.date}</p>
                         </div>
                       </div>
                       <span className={`fp-ping-badge ${badge.className}`}>
