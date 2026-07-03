@@ -78,7 +78,9 @@ export default function PostsPage() {
     }
 
     try {
-      const res = await fetch('/api/ping', {
+      // Vercel ပေါ်မှာ သီးသန့် host ထားတဲ့ ping API
+      const PING_API_URL = 'https://web-p-nu.vercel.app/api/ping';
+      const res = await fetch(PING_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targets }),
