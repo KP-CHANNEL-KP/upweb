@@ -11,8 +11,11 @@ interface Post {
 }
 
 interface PostWithPing extends Post {
-  ping: number;   // server-side status: -2 = checking, -1 = timeout/dead, >=0 = ms (authoritative)
-  myPing: number; // browser-side personalized latency: -2 = checking, -1 = not measured, >=0 = ms
+  // Server (Vercel /api/ping) ကနေ real TCP connect လုပ်ပြီး ရလာတဲ့ authoritative value
+  // -2 = checking, -1 = timeout/dead, >=0 = ms
+  ping: number;
+  country: string;     // ဥပမာ - "Singapore" — backend ကနေ auto-detect လုပ်ပေးတာ
+  countryCode: string; // ဥပမာ - "SG" — flag emoji ဆောက်ဖို့ သုံးမယ်
 }
 
 const posts: Post[] = [
@@ -35,77 +38,24 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
-// Browser ကနေ တိုင်းရတဲ့ raw ms ဟာ TLS-handshake overhead ပါဝင်နေလို့
-// actual VPN experience ထက် များစွာ ကြီးနေတတ်ပါတယ် (ဥပမာ 3000ms+ အထိ)။
-// ဒါကြောင့် "ms နည်းလေ လိုင်းကောင်းလေ" ဆိုတဲ့ relative feel ကို ထိန်းထားပြီး
-// ပြသမယ့် ဂဏန်းကိုပဲ 10ပုံ 1ပုံ လျှော့ပြပါမယ် (comparison logic အတွက်တော့
-// raw value ကိုပဲ သုံးမယ် — ဂဏန်းအတိအကျ scale ချကြည့်ချင်ရင် ဒီ constant ကို ပြင်ပါ)
-const DISPLAY_SCALE = 0.01;
-
-function scaleForDisplay(rawMs: number): number {
-  return Math.max(1, Math.round(rawMs * DISPLAY_SCALE));
+// ISO country code (ဥပမာ "SG") ကို flag emoji ("🇸🇬") အဖြစ် ပြောင်းမယ်
+// Unicode regional indicator symbol logic — country code မရှိရင် placeholder ပြန်ပေး
+function countryCodeToFlag(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return '🏳️';
+  const codePoints = [...countryCode.toUpperCase()].map(
+    (c) => 127397 + c.charCodeAt(0)
+  );
+  return String.fromCodePoint(...codePoints);
 }
 
-// Ping badge — server status (authoritative) ကို base အနေနဲ့ သုံးပြီး
-// myPing (browser-side, user location) ရရင် အဲ့ဒါကို ms scale-down ပြီး ပြမယ်
-function getPingBadge(ping: number, myPing: number): { label: string; className: string } {
+// Ping badge — server (Vercel) ကနေ real TCP connect တိုင်းထားတဲ့ ms ကို တိုက်ရိုက်ပြမယ်
+// ဒါက protocol (ss / trojan / vmess) ဘာဖြစ်ဖြစ် တိကျပါတယ် — TCP layer ကိုပဲ တိုင်းလို့ပါ
+function getPingBadge(ping: number): { label: string; className: string } {
   if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
   if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
-
-  // Server က alive လို့ အတည်ပြုပြီးသား — browser ကနေ user ရဲ့ ကိုယ်ပိုင် ms ရရင် ဒါကိုပဲပြမယ်
-  if (myPing >= 0) {
-    const shown = scaleForDisplay(myPing);
-    // သတ်မှတ်ချက် (color grading) ကို ပြသနေတဲ့ scaled ဂဏန်းအပေါ်ကိုပဲ ယှဉ်မယ်
-    // (raw value အတိုင်း ယှဉ်ရင် scale လျှော့ပြီးတဲ့နောက် threshold ကနေ ကျော်နေတတ်လို့
-    // key အားလုံး တစ်ဆင့်တည်း (နီရောင်) ပဲ ပြနေတတ်ပါတယ်)
-    if (shown < 30) return { label: `🟢 ≈${shown}ms`, className: 'fp-ping-excellent' };
-    if (shown < 60) return { label: `🟡 ≈${shown}ms`, className: 'fp-ping-good' };
-    return { label: `🔴 ≈${shown}ms`, className: 'fp-ping-slow' };
-  }
-  // myPing မရသေးရင် (checking or not measured) fallback
-  if (myPing === -2) return { label: '🟢 Online (Ping...)', className: 'fp-ping-excellent' };
-  return { label: '🟢 Online', className: 'fp-ping-excellent' };
-}
-
-// Browser ကနေ တိုက်ရိုက် latency တိုင်းမယ် — user ရဲ့ တကယ့် location ကနေ
-// (no-cors fetch — CORS error = server response ရလာတယ် = alive/latency ရ)
-// Network jitter ကြောင့် တစ်ကြိမ်တည်း တိုင်းရင် မတိကျနိုင်လို့ ၃ ကြိမ်တိုင်းပြီး
-// အနှေးဆုံး hiccup တွေဖယ်ကာ အသေးဆုံး (အမြန်ဆုံး/ တည်ငြိမ်ဆုံး) ကို ယူမယ်
-async function measureOnce(host: string, port: number): Promise<number> {
-  const start = performance.now();
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 4000);
-
-  try {
-    await fetch(`https://${host}:${port}`, {
-      method: 'HEAD',
-      signal: controller.signal,
-      mode: 'no-cors',
-      cache: 'no-store',
-    });
-    clearTimeout(timer);
-    return Math.round(performance.now() - start);
-  } catch (e: any) {
-    clearTimeout(timer);
-    if (e?.name === 'AbortError') return -1;
-    return Math.round(performance.now() - start);
-  }
-}
-
-async function checkPingBrowser(host: string, port: number): Promise<number> {
-  const ATTEMPTS = 3;
-  const results: number[] = [];
-
-  for (let i = 0; i < ATTEMPTS; i++) {
-    const r = await measureOnce(host, port);
-    if (r >= 0) results.push(r);
-    // attempt ချင်းကြား slight delay — TLS/connection reuse effect လျှော့ဖို့
-    if (i < ATTEMPTS - 1) await new Promise((res) => setTimeout(res, 80));
-  }
-
-  if (results.length === 0) return -1; // အကြိမ်ကုန် timeout ဖြစ်ခဲ့ရင်ပဲ dead လို့သတ်မှတ်မယ်
-  results.sort((a, b) => a - b);
-  return results[Math.floor(results.length / 2)]; // median ယူ — outlier တွေ ရှောင်ဖို့
+  if (ping < 150) return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
+  if (ping < 400) return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
+  return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
 }
 
 export default function PostsPage() {
@@ -115,46 +65,13 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(false);
 
   const [keys, setKeys] = useState<PostWithPing[]>(
-    posts.map((p) => ({ ...p, ping: -2, myPing: -1 }))
+    posts.map((p) => ({ ...p, ping: -2, country: '', countryCode: '' }))
   );
   const [pingDone, setPingDone] = useState(false);
 
-  // Browser ကနေ user ရဲ့ ကိုယ်ပိုင် latency ကို chunk 5 စီ တိုင်းမယ်
-  const runBrowserPing = useCallback(async (targets: { host: string; port: number }[]) => {
-    // Checking state ကို online key တွေအတွက် ပြင်ထားမယ်
-    setKeys((prev) =>
-      prev.map((item) => {
-        const parsed = extractHostPort(item.desc);
-        if (!parsed) return item;
-        const isTarget = targets.some((t) => t.host === parsed.host && t.port === parsed.port);
-        return isTarget ? { ...item, myPing: -2 } : item;
-      })
-    );
-
-    const myPingMap = new Map<string, number>();
-    const chunks: { host: string; port: number }[][] = [];
-    for (let i = 0; i < targets.length; i += 5) chunks.push(targets.slice(i, i + 5));
-
-    for (const chunk of chunks) {
-      await Promise.all(
-        chunk.map(async ({ host, port }) => {
-          const ping = await checkPingBrowser(host, port);
-          myPingMap.set(`${host}:${port}`, ping);
-        })
-      );
-      setKeys((prev) =>
-        prev.map((item) => {
-          const parsed = extractHostPort(item.desc);
-          if (!parsed) return item;
-          const key = `${parsed.host}:${parsed.port}`;
-          const myPing = myPingMap.get(key);
-          return myPing !== undefined ? { ...item, myPing } : item;
-        })
-      );
-    }
-  }, []);
-
-  // Server-side /api/ping endpoint ကို ခေါ်ပြီး real TCP ping စစ်မယ်
+  // Server-side /api/ping endpoint (Vercel, Node runtime) ကို ခေါ်ပြီး
+  // real TCP ping စစ်မယ် — Cloudflare Pages Functions မှာ raw TCP socket
+  // ဖွင့်လို့ မရလို့ ဒီ ping logic ကို Vercel host ခွဲထားတာ ဖြစ်ပါတယ်
   const runServerPing = useCallback(async () => {
     setPingDone(false);
 
@@ -186,12 +103,16 @@ export default function PostsPage() {
         body: JSON.stringify({ targets }),
       });
       const data = (await res.json()) as {
-        results: { host: string; port: number; ping: number }[];
+        results: { host: string; port: number; ping: number; country?: string; countryCode?: string }[];
       };
 
-      const ipPingMap = new Map<string, number>();
+      const infoMap = new Map<string, { ping: number; country: string; countryCode: string }>();
       for (const r of data.results) {
-        ipPingMap.set(`${r.host}:${r.port}`, r.ping);
+        infoMap.set(`${r.host}:${r.port}`, {
+          ping: r.ping,
+          country: r.country || '',
+          countryCode: r.countryCode || '',
+        });
       }
 
       setKeys((prev) =>
@@ -199,20 +120,12 @@ export default function PostsPage() {
           const parsed = extractHostPort(item.desc);
           if (!parsed) return item;
           const ipKey = `${parsed.host}:${parsed.port}`;
-          const ping = ipPingMap.get(ipKey);
-          return ping !== undefined ? { ...item, ping } : item;
+          const info = infoMap.get(ipKey);
+          return info !== undefined
+            ? { ...item, ping: info.ping, country: info.country, countryCode: info.countryCode }
+            : item;
         })
       );
-
-      // Server status "Online" ပြတဲ့ key တွေအတွက်ပဲ — browser ကနေ
-      // user ရဲ့ တကယ့် location ကနေ personalized ping ထပ်တိုင်းမယ်
-      const onlineTargets = targets.filter((t) => {
-        const p = ipPingMap.get(`${t.host}:${t.port}`);
-        return p !== undefined && p >= 0;
-      });
-      if (onlineTargets.length > 0) {
-        runBrowserPing(onlineTargets);
-      }
     } catch {
       toast.error('Ping စစ်ရန် မအောင်မြင်ပါ');
       // Fetch fail ရင် အားလုံးကို dead (-1) အနေနဲ့ သတ်မှတ်မယ်
@@ -334,7 +247,7 @@ export default function PostsPage() {
 
             <div className="fp-keys-grid">
               {keys.map((post, index) => {
-                const badge = getPingBadge(post.ping, post.myPing);
+                const badge = getPingBadge(post.ping);
                 const isDead = post.ping === -1;
                 const isChecking = post.ping === -2;
                 return (
@@ -349,7 +262,14 @@ export default function PostsPage() {
                         <span className="po-num">{post.num}</span>
                         <div>
                           <h3 className="fp-key-name">{post.title}</h3>
-                          <p className="po-date">{post.date}</p>
+                          <p className="po-date">
+                            {post.date}
+                            {post.country && (
+                              <span className="fp-key-country">
+                                {' '}· {countryCodeToFlag(post.countryCode)} {post.country}
+                              </span>
+                            )}
+                          </p>
                         </div>
                       </div>
                       <span className={`fp-ping-badge ${badge.className}`}>
