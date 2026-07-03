@@ -55,9 +55,11 @@ function getPingBadge(ping: number, myPing: number): { label: string; className:
   // Server က alive လို့ အတည်ပြုပြီးသား — browser ကနေ user ရဲ့ ကိုယ်ပိုင် ms ရရင် ဒါကိုပဲပြမယ်
   if (myPing >= 0) {
     const shown = scaleForDisplay(myPing);
-    // သတ်မှတ်ချက် (color grading) ကတော့ raw (မလျှော့မီ) value အတိုင်း ယှဉ်တယ်
-    if (myPing < 150) return { label: `🟢 ≈${shown}ms`, className: 'fp-ping-excellent' };
-    if (myPing < 400) return { label: `🟡 ≈${shown}ms`, className: 'fp-ping-good' };
+    // သတ်မှတ်ချက် (color grading) ကို ပြသနေတဲ့ scaled ဂဏန်းအပေါ်ကိုပဲ ယှဉ်မယ်
+    // (raw value အတိုင်း ယှဉ်ရင် scale လျှော့ပြီးတဲ့နောက် threshold ကနေ ကျော်နေတတ်လို့
+    // key အားလုံး တစ်ဆင့်တည်း (နီရောင်) ပဲ ပြနေတတ်ပါတယ်)
+    if (shown < 30) return { label: `🟢 ≈${shown}ms`, className: 'fp-ping-excellent' };
+    if (shown < 60) return { label: `🟡 ≈${shown}ms`, className: 'fp-ping-good' };
     return { label: `🔴 ≈${shown}ms`, className: 'fp-ping-slow' };
   }
   // myPing မရသေးရင် (checking or not measured) fallback
