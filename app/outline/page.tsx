@@ -38,14 +38,13 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
-// ISO country code (ဥပမာ "SG") ကို flag emoji ("🇸🇬") အဖြစ် ပြောင်းမယ်
-// Unicode regional indicator symbol logic — country code မရှိရင် placeholder ပြန်ပေး
-function countryCodeToFlag(countryCode: string): string {
-  if (!countryCode || countryCode.length !== 2) return '🏳️';
-  const codePoints = [...countryCode.toUpperCase()].map(
-    (c) => 127397 + c.charCodeAt(0)
-  );
-  return String.fromCodePoint(...codePoints);
+// ISO country code (ဥပမာ "SG") ကို flag icon (SVG) URL အဖြစ် ပြောင်းမယ်
+// Windows/Chrome ဟာ flag emoji ကို native render မလုပ်ဘဲ "SG" စာလုံးအဖြစ်ပဲ
+// fallback ပြတတ်လို့ (macOS/iOS/Android မှာတော့ ပုံမှန် ပေါ်ပါတယ်) — OS-independent
+// ဖြစ်အောင် flagcdn.com ကနေ SVG image ကို တိုက်ရိုက် ခေါ်သုံးမယ်
+function countryCodeToFlagUrl(countryCode: string): string | null {
+  if (!countryCode || countryCode.length !== 2) return null;
+  return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
 
 // Ping badge — server (Vercel) ကနေ real TCP connect တိုင်းထားတဲ့ ms ကို တိုက်ရိုက်ပြမယ်
@@ -264,9 +263,21 @@ export default function PostsPage() {
                           <h3 className="fp-key-name">
                             {post.title}
                             {post.countryCode && (
-                              <span className="fp-key-flag" title={post.country}>
-                                {' '}{countryCodeToFlag(post.countryCode)}
-                              </span>
+                              <img
+                                src={countryCodeToFlagUrl(post.countryCode) || undefined}
+                                alt={post.country}
+                                title={post.country}
+                                className="fp-key-flag"
+                                width={18}
+                                height={13}
+                                loading="lazy"
+                                style={{
+                                  display: 'inline-block',
+                                  marginLeft: '6px',
+                                  verticalAlign: 'middle',
+                                  borderRadius: '2px',
+                                }}
+                              />
                             )}
                           </h3>
                           <p className="po-date">{post.date}</p>
