@@ -2,12 +2,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
+import { PUBLIC_SERVERS_RAW } from '../lib/publicServersRaw';
+
+type Source = 'private' | 'public';
 
 interface Post {
   num: string;
   title: string;
   date: string;
   desc: string;
+  source: Source;
 }
 
 interface PostWithPing extends Post {
@@ -18,13 +22,47 @@ interface PostWithPing extends Post {
   countryCode: string; // ဥပမာ - "SG" — flag emoji ဆောက်ဖို့ သုံးမယ်
 }
 
-const posts: Post[] = [
-  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbnYwN3VvOWkwdW1lajc4@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-1' },
-  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmZHR5OTloY2NuZzMydW5l@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-2' },
-  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTozYmJhcXlrNmkxbjl5bWF2@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-3' },
-  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4Y3NtYmtxaXk4eWdmNzMy@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-4' },
-  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbWN4aWhlOXI0aDVhaG1t@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-5' },
+// ===== 1. သင့်ကိုယ်ပိုင် (Private) Outline Keys =====
+const privatePosts: Post[] = [
+  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbnYwN3VvOWkwdW1lajc4@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-1', source: 'private' },
+  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmZHR5OTloY2NuZzMydW5l@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-2', source: 'private' },
+  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTozYmJhcXlrNmkxbjl5bWF2@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-3', source: 'private' },
+  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo4Y3NtYmtxaXk4eWdmNzMy@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-4', source: 'private' },
+  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpqbWN4aWhlOXI0aDVhaG1t@129.212.238.130:12647?type=tcp#Premium%20Free%20Outline-5', source: 'private' },
 ];
+
+// ===== 2. Public Servers (servers.json ထဲက raw ss:// list ကို parse လုပ်တာ) =====
+function parsePublicServers(raw: string): Post[] {
+  const lines = raw
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('ss://'));
+
+  return lines.map((line, i) => {
+    let title = `Public Server ${i + 1}`;
+    const hashIdx = line.indexOf('#');
+    if (hashIdx !== -1) {
+      try {
+        title = decodeURIComponent(line.slice(hashIdx + 1).replace(/\+/g, ' ')) || title;
+      } catch {
+        // decodeURIComponent fail ရင် raw fragment ကိုပဲ သုံးမယ်
+        title = line.slice(hashIdx + 1).replace(/\+/g, ' ') || title;
+      }
+    }
+    return {
+      num: String(i + 1).padStart(2, '0'),
+      title,
+      date: 'Public Server',
+      desc: line,
+      source: 'public' as Source,
+    };
+  });
+}
+
+const publicPosts: Post[] = parsePublicServers(PUBLIC_SERVERS_RAW);
+
+// အားလုံးပေါင်း — ping စစ်ဖို့ / host,port extract ဖို့ တစ်ခုတည်း loop ပတ်ဖို့ သုံးမယ်
+const allPosts: Post[] = [...privatePosts, ...publicPosts];
 
 // ss:// key ထဲကနေ Host:Port ဆွဲထုတ်မယ်
 // Format: ss://BASE64(method:password)@host:port?type=tcp#name
@@ -57,6 +95,16 @@ function getPingBadge(ping: number): { label: string; className: string } {
   return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
 }
 
+// Ping-based sort: online (ping ascending) > checking > dead/timeout
+function sortByPing(a: PostWithPing, b: PostWithPing): number {
+  const rank = (p: number) => (p >= 0 ? 0 : p === -2 ? 1 : 2);
+  const ra = rank(a.ping);
+  const rb = rank(b.ping);
+  if (ra !== rb) return ra - rb;
+  if (ra === 0) return a.ping - b.ping;
+  return 0;
+}
+
 export default function PostsPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [verifyInput, setVerifyInput] = useState('');
@@ -64,7 +112,7 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(false);
 
   const [keys, setKeys] = useState<PostWithPing[]>(
-    posts.map((p) => ({ ...p, ping: -2, country: '', countryCode: '' }))
+    allPosts.map((p) => ({ ...p, ping: -2, country: '', countryCode: '' }))
   );
   const [pingDone, setPingDone] = useState(false);
 
@@ -74,11 +122,11 @@ export default function PostsPage() {
   const runServerPing = useCallback(async () => {
     setPingDone(false);
 
-    // Unique host:port — dedupe ပြီး api ကို တစ်ခါတည်း ပို့မယ်
+    // Unique host:port — dedupe ပြီး api ကို တစ်ခါတည်း ပို့မယ် (private + public အားလုံး)
     const seen = new Set<string>();
     const targets: { host: string; port: number }[] = [];
 
-    for (const p of posts) {
+    for (const p of allPosts) {
       const parsed = extractHostPort(p.desc);
       if (!parsed) continue;
       const key = `${parsed.host}:${parsed.port}`;
@@ -177,6 +225,72 @@ export default function PostsPage() {
   const timeoutCount = keys.filter((k) => k.ping === -1).length;
   const checkingCount = keys.filter((k) => k.ping === -2).length;
 
+  // Private / Public နှစ်ခုကို ခွဲပြီး တစ်ခုစီအတွင်း ping အနိမ့်ဆုံးကို အပေါ်ဆုံးမှာ စီမယ်
+  const privateKeys = keys.filter((k) => k.source === 'private').sort(sortByPing);
+  const publicKeys = keys.filter((k) => k.source === 'public').sort(sortByPing);
+
+  const renderKeyCard = (post: PostWithPing, index: number) => {
+    const badge = getPingBadge(post.ping);
+    const isDead = post.ping === -1;
+    const isChecking = post.ping === -2;
+    return (
+      <div
+        key={`${post.source}-${index}-${post.desc}`}
+        className={`fp-key-card ${isDead ? 'fp-key-card-dead' : ''} ${isChecking ? 'fp-key-card-checking' : ''}`}
+      >
+        <div className="fp-key-stripe" />
+
+        <div className="fp-key-header">
+          <div className="fp-key-title-row">
+            <span className="po-num">{post.num}</span>
+            <div>
+              <h3 className="fp-key-name">
+                {post.title}
+                {post.countryCode && (
+                  <img
+                    src={countryCodeToFlagUrl(post.countryCode) || undefined}
+                    alt={post.country}
+                    title={post.country}
+                    className="fp-key-flag"
+                    width={18}
+                    height={13}
+                    loading="lazy"
+                    style={{
+                      display: 'inline-block',
+                      marginLeft: '6px',
+                      verticalAlign: 'middle',
+                      borderRadius: '2px',
+                    }}
+                  />
+                )}
+              </h3>
+              <p className="po-date">{post.date}</p>
+            </div>
+          </div>
+          <span className={`fp-ping-badge ${badge.className}`}>
+            {badge.label}
+          </span>
+        </div>
+
+        <div className="fp-key-box">
+          <code className="fp-key-text">{post.desc}</code>
+        </div>
+
+        <button
+          onClick={() => handleCopy(post.desc)}
+          disabled={isDead || isChecking}
+          className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
+        >
+          {isDead
+            ? '⚫ Timeout — မသုံးနိုင်ပါ'
+            : isChecking
+            ? '⏳ Ping စစ်နေသည်...'
+            : '📋 Copy Key'}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <main className="fp-main">
       <Toaster position="top-center" />
@@ -244,69 +358,21 @@ export default function PostsPage() {
               {pingDone && <span className="fp-stat fp-stat-done">✅ Ping စစ်ပြီး</span>}
             </div>
 
-            <div className="fp-keys-grid">
-              {keys.map((post, index) => {
-                const badge = getPingBadge(post.ping);
-                const isDead = post.ping === -1;
-                const isChecking = post.ping === -2;
-                return (
-                  <div
-                    key={index}
-                    className={`fp-key-card ${isDead ? 'fp-key-card-dead' : ''} ${isChecking ? 'fp-key-card-checking' : ''}`}
-                  >
-                    <div className="fp-key-stripe" />
+            {/* ===== ကိုယ်ပိုင် Servers ===== */}
+            <div className="fp-section">
+              <h2 className="fp-section-title">🔒 ကိုယ်ပိုင် Servers ({privateKeys.length})</h2>
+              <div className="fp-keys-grid">
+                {privateKeys.map((post, index) => renderKeyCard(post, index))}
+              </div>
+            </div>
 
-                    <div className="fp-key-header">
-                      <div className="fp-key-title-row">
-                        <span className="po-num">{post.num}</span>
-                        <div>
-                          <h3 className="fp-key-name">
-                            {post.title}
-                            {post.countryCode && (
-                              <img
-                                src={countryCodeToFlagUrl(post.countryCode) || undefined}
-                                alt={post.country}
-                                title={post.country}
-                                className="fp-key-flag"
-                                width={18}
-                                height={13}
-                                loading="lazy"
-                                style={{
-                                  display: 'inline-block',
-                                  marginLeft: '6px',
-                                  verticalAlign: 'middle',
-                                  borderRadius: '2px',
-                                }}
-                              />
-                            )}
-                          </h3>
-                          <p className="po-date">{post.date}</p>
-                        </div>
-                      </div>
-                      <span className={`fp-ping-badge ${badge.className}`}>
-                        {badge.label}
-                      </span>
-                    </div>
-
-                    <div className="fp-key-box">
-                      <code className="fp-key-text">{post.desc}</code>
-                    </div>
-
-                    <button
-                      onClick={() => handleCopy(post.desc)}
-                      disabled={isDead || isChecking}
-                      className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
-                    >
-                      {isDead
-                        ? '⚫ Timeout — မသုံးနိုင်ပါ'
-                        : isChecking
-                        ? '⏳ Ping စစ်နေသည်...'
-                        : '📋 Copy Key'}
-                    </button>
-                  </div>
-                );
-              })}
-              <div className="fp-banner-wrap"><Banner /></div>
+            {/* ===== Public Servers ===== */}
+            <div className="fp-section">
+              <h2 className="fp-section-title">🌐 Public Servers ({publicKeys.length})</h2>
+              <div className="fp-keys-grid">
+                {publicKeys.map((post, index) => renderKeyCard(post, index))}
+                <div className="fp-banner-wrap"><Banner /></div>
+              </div>
             </div>
           </>
         )}
