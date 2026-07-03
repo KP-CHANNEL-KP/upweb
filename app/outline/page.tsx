@@ -35,25 +35,28 @@ function extractHostPort(ssKey: string): { host: string; port: number } | null {
   }
 }
 
-// Ping badge — server status (authoritative)
-function getPingBadge(ping: number): { label: string; className: string } {
+// Ping badge — server status (authoritative) ကို base အနေနဲ့ သုံးပြီး
+// myPing (browser-side, user location) ရရင် အဲ့ဒါကို ms အတိအကျ ပြမယ်
+function getPingBadge(ping: number, myPing: number): { label: string; className: string } {
   if (ping === -2) return { label: '⏳ စစ်နေသည်', className: 'fp-ping-checking' };
   if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
-  return { label: '🟢 Online', className: 'fp-ping-excellent' };
-}
 
-// "Your Ping" label — browser (user location) ကနေ တိုင်းတဲ့ personalized latency
-function getMyPingLabel(myPing: number): string {
-  if (myPing === -2) return 'သင့်ဆီက Ping: ⏳ စစ်နေသည်...';
-  if (myPing === -1) return '';
-  if (myPing < 150) return `သင့်ဆီက Ping: 🟢 ${myPing}ms`;
-  if (myPing < 400) return `သင့်ဆီက Ping: 🟡 ${myPing}ms`;
-  return `သင့်ဆီက Ping: 🔴 ${myPing}ms`;
+  // Server က alive လို့ အတည်ပြုပြီးသား — browser ကနေ user ရဲ့ ကိုယ်ပိုင် ms ရရင် ဒါကိုပဲပြမယ်
+  if (myPing >= 0) {
+    if (myPing < 150) return { label: `🟢 ≈${myPing}ms`, className: 'fp-ping-excellent' };
+    if (myPing < 400) return { label: `🟡 ≈${myPing}ms`, className: 'fp-ping-good' };
+    return { label: `🔴 ≈${myPing}ms`, className: 'fp-ping-slow' };
+  }
+  // myPing မရသေးရင် (checking or not measured) fallback
+  if (myPing === -2) return { label: '🟢 Online (Ping...)', className: 'fp-ping-excellent' };
+  return { label: '🟢 Online', className: 'fp-ping-excellent' };
 }
 
 // Browser ကနေ တိုက်ရိုက် latency တိုင်းမယ် — user ရဲ့ တကယ့် location ကနေ
 // (no-cors fetch — CORS error = server response ရလာတယ် = alive/latency ရ)
-async function checkPingBrowser(host: string, port: number): Promise<number> {
+// Network jitter ကြောင့် တစ်ကြိမ်တည်း တိုင်းရင် မတိကျနိုင်လို့ ၃ ကြိမ်တိုင်းပြီး
+// အနှေးဆုံး hiccup တွေဖယ်ကာ အသေးဆုံး (အမြန်ဆုံး/ တည်ငြိမ်ဆုံး) ကို ယူမယ်
+async function measureOnce(host: string, port: number): Promise<number> {
   const start = performance.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 4000);
@@ -72,6 +75,22 @@ async function checkPingBrowser(host: string, port: number): Promise<number> {
     if (e?.name === 'AbortError') return -1;
     return Math.round(performance.now() - start);
   }
+}
+
+async function checkPingBrowser(host: string, port: number): Promise<number> {
+  const ATTEMPTS = 3;
+  const results: number[] = [];
+
+  for (let i = 0; i < ATTEMPTS; i++) {
+    const r = await measureOnce(host, port);
+    if (r >= 0) results.push(r);
+    // attempt ချင်းကြား slight delay — TLS/connection reuse effect လျှော့ဖို့
+    if (i < ATTEMPTS - 1) await new Promise((res) => setTimeout(res, 80));
+  }
+
+  if (results.length === 0) return -1; // အကြိမ်ကုန် timeout ဖြစ်ခဲ့ရင်ပဲ dead လို့သတ်မှတ်မယ်
+  results.sort((a, b) => a - b);
+  return results[Math.floor(results.length / 2)]; // median ယူ — outlier တွေ ရှောင်ဖို့
 }
 
 export default function PostsPage() {
@@ -300,7 +319,7 @@ export default function PostsPage() {
 
             <div className="fp-keys-grid">
               {keys.map((post, index) => {
-                const badge = getPingBadge(post.ping);
+                const badge = getPingBadge(post.ping, post.myPing);
                 const isDead = post.ping === -1;
                 const isChecking = post.ping === -2;
                 return (
