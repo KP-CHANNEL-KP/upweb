@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Bot token & chat id live ONLY on the server (Vercel/host env vars),
 // never shipped to the browser. Set these in .env.local:
+
+export const runtime = 'edge';
+
 //   TELEGRAM_BOT_TOKEN=xxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //   TELEGRAM_CHAT_ID=7070690379
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN_2;
