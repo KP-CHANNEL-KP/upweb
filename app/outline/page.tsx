@@ -22,11 +22,11 @@ interface PostWithPing extends Post {
 }
 
 const privatePosts: Post[] = [
-  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
-  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
-  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
-  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
-  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'No Data', source: 'private' },
+  { num: '01', title: 'Outline Key 1', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvNTRvNXlpNjhiemE1dWp5@168.144.43.83:46416?type=tcp#KP%20Premium%20Free%20Outline-1', source: 'private' },
+  { num: '02', title: 'Outline Key 2', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpkZHBlZ3N0amN2djF4ZXQ4@168.144.43.83:46416?type=tcp#KP%20Premium%20Free%20Outline-2', source: 'private' },
+  { num: '03', title: 'Outline Key 3', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpmaXVtNWNja2R2c3RhMWEx@168.144.43.83:46416?type=tcp#KP%20Premium%20Free%20Outline-3', source: 'private' },
+  { num: '04', title: 'Outline Key 4', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo0d3lnbjlvMm0ycmU2eXRl@168.144.43.83:46416?type=tcp#KP%20Premium%20Free%20Outline-4', source: 'private' },
+  { num: '05', title: 'Outline Key 5', date: 'Premium High Speed', desc: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp1d241YWFlMmJqcTZpa2Nq@168.144.43.83:46416?type=tcp#KP%20Premium%20Free%20Outline-5', source: 'private' },
 ];
 
 function parsePublicServers(raw: string): Post[] {
