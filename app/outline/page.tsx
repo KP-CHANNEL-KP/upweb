@@ -282,7 +282,7 @@ export default function PostsPage() {
           </span>
           <h1 className="fp-title">
             {t('Outline Keys များ', 'Outline Keys')}<br />
-            <span className="fp-title-gradient">{t('Admin မှ ( ပိတ် ) ထားပါသည်', 'Closed by Admin')}</span>
+            <span className="fp-title-gradient">{t('Admin မှ ( ဖွင့် ) ထားပါသည်', 'Opened by Admin')}</span>
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
