@@ -2,7 +2,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
-import { PUBLIC_SERVERS_RAW } from '../lib/publicServersRaw';
+// Fallback for missing module '../lib/publicServersRaw'
+// If you have a real publicServersRaw file, remove this fallback and restore the import.
+const PUBLIC_SERVERS_RAW = '';
 import { useLanguage } from '../components/LanguageProvider';
 
 type Source = 'private' | 'public';
