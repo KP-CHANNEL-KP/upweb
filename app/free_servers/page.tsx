@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner';
 // Fallback for missing module '../lib/publicServersRaw'
@@ -15,12 +15,6 @@ interface Post {
   date: string;
   desc: string;
   source: Source;
-}
-
-interface PostWithPing extends Post {
-  ping: number;
-  country: string;
-  countryCode: string;
 }
 
 const privatePosts: Post[] = [
@@ -60,38 +54,6 @@ function parsePublicServers(raw: string): Post[] {
 const publicPosts: Post[] = parsePublicServers(PUBLIC_SERVERS_RAW);
 const allPosts: Post[] = [...privatePosts, ...publicPosts];
 
-function extractHostPort(ssKey: string): { host: string; port: number } | null {
-  try {
-    const match = ssKey.match(/ss:\/\/[^@]+@([^:/?#]+):(\d+)/);
-    if (!match) return null;
-    return { host: match[1], port: parseInt(match[2]) };
-  } catch {
-    return null;
-  }
-}
-
-function countryCodeToFlagUrl(countryCode: string): string | null {
-  if (!countryCode || countryCode.length !== 2) return null;
-  return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
-}
-
-function getPingBadge(ping: number, t: (my: string, en: string) => string): { label: string; className: string } {
-  if (ping === -2) return { label: `⏳ ${t('စစ်နေသည်', 'Checking')}`, className: 'fp-ping-checking' };
-  if (ping === -1) return { label: '⚫ Timeout', className: 'fp-ping-dead' };
-  if (ping < 150) return { label: `🟢 ${ping}ms`, className: 'fp-ping-excellent' };
-  if (ping < 400) return { label: `🟡 ${ping}ms`, className: 'fp-ping-good' };
-  return { label: `🔴 ${ping}ms`, className: 'fp-ping-slow' };
-}
-
-function sortByPing(a: PostWithPing, b: PostWithPing): number {
-  const rank = (p: number) => (p >= 0 ? 0 : p === -2 ? 1 : 2);
-  const ra = rank(a.ping);
-  const rb = rank(b.ping);
-  if (ra !== rb) return ra - rb;
-  if (ra === 0) return a.ping - b.ping;
-  return 0;
-}
-
 export default function PostsPage() {
   const { t } = useLanguage();
   const [isVerified, setIsVerified] = useState(false);
@@ -99,74 +61,8 @@ export default function PostsPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [keys, setKeys] = useState<PostWithPing[]>(
-    allPosts.map((p) => ({ ...p, ping: -2, country: '', countryCode: '' }))
-  );
-  const [pingDone, setPingDone] = useState(false);
-
-  const runServerPing = useCallback(async () => {
-    setPingDone(false);
-    const seen = new Set<string>();
-    const targets: { host: string; port: number }[] = [];
-
-    for (const p of allPosts) {
-      const parsed = extractHostPort(p.desc);
-      if (!parsed) continue;
-      const key = `${parsed.host}:${parsed.port}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        targets.push(parsed);
-      }
-    }
-
-    if (targets.length === 0) {
-      setPingDone(true);
-      return;
-    }
-
-    try {
-      const PING_API_URL = 'https://web-p-nu.vercel.app/api/ping';
-      const res = await fetch(PING_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targets }),
-      });
-      const data = (await res.json()) as {
-        results: { host: string; port: number; ping: number; country?: string; countryCode?: string }[];
-      };
-
-      const infoMap = new Map<string, { ping: number; country: string; countryCode: string }>();
-      for (const r of data.results) {
-        infoMap.set(`${r.host}:${r.port}`, {
-          ping: r.ping,
-          country: r.country || '',
-          countryCode: r.countryCode || '',
-        });
-      }
-
-      setKeys((prev) =>
-        prev.map((item) => {
-          const parsed = extractHostPort(item.desc);
-          if (!parsed) return item;
-          const ipKey = `${parsed.host}:${parsed.port}`;
-          const info = infoMap.get(ipKey);
-          return info !== undefined
-            ? { ...item, ping: info.ping, country: info.country, countryCode: info.countryCode }
-            : item;
-        })
-      );
-    } catch {
-      toast.error(t('Ping စစ်ရန် မအောင်မြင်ပါ', 'Failed to check ping'));
-      setKeys((prev) => prev.map((item) => ({ ...item, ping: -1 })));
-    } finally {
-      setPingDone(true);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    if (!isVerified) return;
-    runServerPing();
-  }, [isVerified, runServerPing]);
+  const privateKeys = allPosts.filter((k) => k.source === 'private');
+  const publicKeys = allPosts.filter((k) => k.source === 'public');
 
   const handleCopy = (desc: string) => {
     navigator.clipboard.writeText(desc);
@@ -201,21 +97,11 @@ export default function PostsPage() {
     }
   };
 
-  const onlineCount = keys.filter((k) => k.ping >= 0).length;
-  const timeoutCount = keys.filter((k) => k.ping === -1).length;
-  const checkingCount = keys.filter((k) => k.ping === -2).length;
-
-  const privateKeys = keys.filter((k) => k.source === 'private').sort(sortByPing);
-  const publicKeys = keys.filter((k) => k.source === 'public').sort(sortByPing);
-
-  const renderKeyCard = (post: PostWithPing, index: number) => {
-    const badge = getPingBadge(post.ping, t);
-    const isDead = post.ping === -1;
-    const isChecking = post.ping === -2;
+  const renderKeyCard = (post: Post, index: number) => {
     return (
       <div
         key={`${post.source}-${index}-${post.desc}`}
-        className={`fp-key-card ${isDead ? 'fp-key-card-dead' : ''} ${isChecking ? 'fp-key-card-checking' : ''}`}
+        className="fp-key-card"
       >
         <div className="fp-key-stripe" />
 
@@ -223,48 +109,18 @@ export default function PostsPage() {
           <div className="fp-key-title-row">
             <span className="po-num">{post.num}</span>
             <div>
-              <h3 className="fp-key-name">
-                {post.title}
-                {post.countryCode && (
-                  <img
-                    src={countryCodeToFlagUrl(post.countryCode) || undefined}
-                    alt={post.country}
-                    title={post.country}
-                    className="fp-key-flag"
-                    width={18}
-                    height={13}
-                    loading="lazy"
-                    style={{
-                      display: 'inline-block',
-                      marginLeft: '6px',
-                      verticalAlign: 'middle',
-                      borderRadius: '2px',
-                    }}
-                  />
-                )}
-              </h3>
+              <h3 className="fp-key-name">{post.title}</h3>
               <p className="po-date">{post.date}</p>
             </div>
           </div>
-          <span className={`fp-ping-badge ${badge.className}`}>
-            {badge.label}
-          </span>
         </div>
 
         <div className="fp-key-box">
           <code className="fp-key-text">{post.desc}</code>
         </div>
 
-        <button
-          onClick={() => handleCopy(post.desc)}
-          disabled={isDead || isChecking}
-          className={`fp-copy-btn ${isDead ? 'fp-copy-btn-dead' : ''}`}
-        >
-          {isDead
-            ? `⚫ Timeout — ${t('မသုံးနိုင်ပါ', 'unusable')}`
-            : isChecking
-            ? `⏳ ${t('Ping စစ်နေသည်...', 'Checking ping...')}`
-            : `📋 ${t('Copy Key', 'Copy Key')}`}
+        <button onClick={() => handleCopy(post.desc)} className="fp-copy-btn">
+          📋 {t('Copy Key', 'Copy Key')}
         </button>
       </div>
     );
@@ -326,13 +182,7 @@ export default function PostsPage() {
         ) : (
           <>
             <div className="fp-stats-bar">
-              <span className="fp-stat fp-stat-total">🔑 {t('စုစုပေါင်း', 'Total')} {keys.length} {t('ခု', '')}</span>
-              <span className="fp-stat fp-stat-online">🟢 Online {onlineCount} {t('ခု', '')}</span>
-              <span className="fp-stat fp-stat-dead">⚫ Timeout {timeoutCount} {t('ခု', '')}</span>
-              {checkingCount > 0 && (
-                <span className="fp-stat fp-stat-checking">⏳ {t('စစ်နေသည်', 'Checking')} {checkingCount} {t('ခု', '')}</span>
-              )}
-              {pingDone && <span className="fp-stat fp-stat-done">✅ {t('Ping စစ်ပြီး', 'Ping check done')}</span>}
+              <span className="fp-stat fp-stat-total">🔑 {t('စုစုပေါင်း', 'Total')} {allPosts.length} {t('ခု', '')}</span>
             </div>
 
             <div className="fp-section">
