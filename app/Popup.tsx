@@ -45,7 +45,7 @@ export default function Popup() {
 
         <div className="kp-popup-links">
           <a
-            href="https://t.me/KP_CHANNEL_KP"
+            href="https://telegram.me/KP_CHANNEL_KP"
             target="_blank"
             rel="noopener noreferrer"
             className="kp-popup-btn kp-popup-btn-primary"

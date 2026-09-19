@@ -10,7 +10,7 @@ const payments = [
 const socials = [
   { name: 'Facebook', handle: 'KP Channel', url: 'https://www.facebook.com/share/1CmNvtjsp8/', emoji: '📘' },
   { name: 'YouTube', handle: '@kpchannel22', url: 'https://youtube.com/@kpchannel22', emoji: '📺' },
-  { name: 'Telegram', handle: '@KP_CHANNEL_KP', url: 'https://t.me/KP_CHANNEL_KP', emoji: '✈️' },
+  { name: 'Telegram', handle: '@KP_CHANNEL_KP', url: 'https://telegram.me/KP_CHANNEL_KP', emoji: '✈️' },
   { name: 'TikTok', handle: '@kpbykp23', url: 'https://tiktok.com/@kpbykp23', emoji: '🎵' },
 ];
 
@@ -48,7 +48,7 @@ export default function Home() {
             ⚡ {t('FREE သုံးစရာများ', 'FREE Resources')}
           </Link>
           <a
-            href="https://t.me/KP_CHANNEL_KP"
+            href="https://telegram.me/KP_CHANNEL_KP"
             target="_blank"
             rel="noopener noreferrer"
             className="kp-btn-ghost"

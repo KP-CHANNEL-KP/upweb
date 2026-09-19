@@ -58,7 +58,7 @@ export default function BuyPage() {
                   📞 {t('ဖုန်းဆက်', 'Call')}
                 </a>
                 <a
-                  href="https://t.me/kpbykp"
+                  href="https://telegram.me/kpbykp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bp-btn bp-btn-tg"

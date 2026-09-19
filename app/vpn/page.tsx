@@ -13,7 +13,7 @@ export default function VPNFilesPage() {
   const [loading, setLoading] = useState(false);
 
   const vpnFiles = [
-    { nameMy: 'KP Atom Tiktok + ထောပီ (Npv Tunnel)', nameEn: 'KP Atom TikTok + Thawpi (Npv Tunnel)', url: '/vpnfiles/KP_ATOM_TIKTOK_+_THAWB.npvt', speed: 'High Speed' },
+    { nameMy: 'KP Atom Tiktok + ထောပီ (Npv Tunnel)', nameEn: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', url: '/vpnfiles/KP_ATOM_500MB_(Bill_Zero_=_Free_Net).npvs', speed: 'High Speed' },
   ];
 
   const handleVerify = async () => {
@@ -56,7 +56,7 @@ export default function VPNFilesPage() {
           </h1>
           <p className="vp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
-            <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="vp-contact-link">
+            <a href="https://telegram.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="vp-contact-link">
               TG: @KPBYKP
             </a>{' '}
             / <span className="vp-contact-link">Viber: 09769043594</span>
@@ -86,7 +86,7 @@ export default function VPNFilesPage() {
             </div>
 
             <a
-              href="https://t.me/KP_WEB_KEY_BOT"
+              href="https://telegram.me/KP_WEB_KEY_BOT"
               target="_blank"
               rel="noopener noreferrer"
               className="vp-btn-tg"

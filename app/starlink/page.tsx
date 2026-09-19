@@ -66,7 +66,7 @@ export default function PostsPage() {
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
-            <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
+            <a href="https://telegram.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
               TG: @KPBYKP
             </a>{' '}
             / <span className="fp-contact-link">Viber: 09769043594</span>
@@ -93,7 +93,7 @@ export default function PostsPage() {
 
             <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
 
-            <a href="https://t.me/KP_WEB_KEY_BOT" target="_blank" rel="noopener noreferrer" className="fp-btn-tg">
+            <a href="https://telegram.me/KP_WEB_KEY_BOT" target="_blank" rel="noopener noreferrer" className="fp-btn-tg">
               🚀 {t('Telegram Bot မှ Key ယူရန်', 'Get Key from Telegram Bot')}
             </a>
 

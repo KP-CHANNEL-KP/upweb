@@ -100,7 +100,7 @@ function CheckoutModal({ plan, onClose }: { plan: SelectedPlan; onClose: () => v
           <a href="tel:09966955081" className="kp-popup-btn kp-popup-btn-secondary">
             📞 Wave Pay &amp; KPay — 09966955081
           </a>
-          <a href="https://t.me/KP_CHANNEL_KP" target="_blank" rel="noopener noreferrer" className="kp-popup-btn kp-popup-btn-primary">
+          <a href="https://telegram.me/KP_CHANNEL_KP" target="_blank" rel="noopener noreferrer" className="kp-popup-btn kp-popup-btn-primary">
             ✈️ {t('Telegram မှ Admin ကို ဆက်သွယ်ပါ', 'Contact Admin via Telegram')}
           </a>
         </div>
@@ -291,7 +291,7 @@ export default function PremiumPage() {
             <Link href="/free" className="kp-btn-primary">
               ⚡ {t('Free Key ယူပါ', 'Get Free Key')}
             </Link>
-            <a href="https://t.me/KP_CHANNEL_KP" target="_blank" rel="noopener noreferrer" className="kp-btn-ghost">
+            <a href="https://telegram.me/KP_CHANNEL_KP" target="_blank" rel="noopener noreferrer" className="kp-btn-ghost">
               ✈️ {t('Telegram ဆက်သွယ်ပါ', 'Contact on Telegram')}
             </a>
           </div>

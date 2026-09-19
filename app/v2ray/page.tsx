@@ -189,7 +189,7 @@ export default function FreePage() {
           </h1>
           <p className="fp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
-            <a href="https://t.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
+            <a href="https://telegram.me/KPBYKP" target="_blank" rel="noopener noreferrer" className="fp-contact-link">
               TG: @KPBYKP
             </a>{' '}
             /{' '}
@@ -216,7 +216,7 @@ export default function FreePage() {
             </button>
             <div className="fp-divider"><span>{t('သို့မဟုတ်', 'or')}</span></div>
             <a
-              href="https://t.me/KP_WEB_KEY_BOT"
+              href="https://telegram.me/KP_WEB_KEY_BOT"
               target="_blank"
               rel="noopener noreferrer"
               className="fp-btn-tg"
