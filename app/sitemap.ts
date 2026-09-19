@@ -4,49 +4,49 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://kpvpn.shop',
+      url: 'https://kpchannel.cc.cd',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: 'https://kpvpn.shop/outline',
+      url: 'https://kpchannel.cc.cd/outline',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/starlink',
+      url: 'https://kpchannel.cc.cd/starlink',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/v2ray',
+      url: 'https://kpchannel.cc.cd/v2ray',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/buy',
+      url: 'https://kpchannel.cc.cd/buy',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/thai',
+      url: 'https://kpchannel.cc.cd/thai',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/vpn',
+      url: 'https://kpchannel.cc.cd/vpn',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://kpvpn.shop/premium',
+      url: 'https://kpchannel.cc.cd/premium',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,

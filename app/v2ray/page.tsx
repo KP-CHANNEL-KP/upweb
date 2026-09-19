@@ -66,7 +66,7 @@ export default function FreePage() {
     setKeysLoading(true);
     setPingDone(false);
     try {
-      const res = await fetch('https://webbot.kpvpn.shop/fetch-keys');
+      const res = await fetch('https://webbot.kpchannel.cc.cd/fetch-keys');
       const rawKeys = (await res.json()) as string[];
       setKeys(rawKeys.map((k) => ({ key: k, ping: -2 })));
     } catch {
@@ -148,7 +148,7 @@ export default function FreePage() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('https://webbot.kpvpn.shop/verify-key', {
+      const res = await fetch('https://webbot.kpchannel.cc.cd/verify-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: verifyInput }),
