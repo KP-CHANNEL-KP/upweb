@@ -13,7 +13,7 @@ export default function VPNFilesPage() {
   const [loading, setLoading] = useState(false);
 
   const vpnFiles = [
-    { nameMy: 'KP Atom Tiktok + ထောပီ (Npv Tunnel)', nameEn: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', url: '/vpnfiles/KP_ATOM_500MB_(Bill_Zero_=_Free_Net).npvs', speed: 'High Speed' },
+    { nameMy: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', nameEn: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', url: '/vpnfiles/KP_ATOM_500MB_(Bill_Zero_=_Free_Net).npvs', speed: 'High Speed' },
   ];
 
   const handleVerify = async () => {
@@ -52,7 +52,7 @@ export default function VPNFilesPage() {
             VPN Files
           </span>
           <h1 className="vp-title">
-            {t('Vpn Files များ Admin မှ', 'VPN Files are currently')} <span className="kp-title-gradient">{t('ပြန် (ပိတ်)', '(Closed)')}</span> {t('ထားပါသည်', 'by Admin')}
+            {t('Vpn Files များ Admin မှ', 'VPN Files are currently')} <span className="kp-title-gradient">{t('ပြန် (ဖွင့်)', '(Open)')}</span> {t('ထားပါသည်', 'by Admin')}
           </h1>
           <p className="vp-sub">
             {t('ဝယ်ယူလိုပါက', 'To purchase, contact')} →{' '}
