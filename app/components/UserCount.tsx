@@ -8,13 +8,13 @@ export default function UserCount() {
 
   useEffect(() => {
     // ၁။ User Count ကို fetch လုပ်ခြင်း
-    fetch('https://webbot.kpchannel.cc.cd/user-count')
+    fetch('https://webbot.kpvpn.shop/user-count')
       .then((res) => res.json() as Promise<{ count: number }>)
       .then((data) => setCount(data.count))
       .catch((err) => console.error("Error fetching user count:", err));
 
     // ၂။ Ping ပါတဲ့ Key တွေကို fetch လုပ်ခြင်း (အသစ်ပြင်ထားတဲ့ API)
-    fetch('https://webbot.kpchannel.cc.cd/fetch-keys-with-ping')
+    fetch('https://webbot.kpvpn.shop/fetch-keys-with-ping')
       .then((res) => res.json() as Promise<Array<{ key: string; ping: number }>>)
       .then((data) => {
         const formattedKeys = data.map((item, index) => ({

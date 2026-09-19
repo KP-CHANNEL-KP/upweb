@@ -180,7 +180,7 @@ export default function PostsPage() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('https://webbot.kpchannel.cc.cd/verify-key', {
+      const res = await fetch('https://webbot.kpvpn.shop/verify-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: verifyInput.trim() }),

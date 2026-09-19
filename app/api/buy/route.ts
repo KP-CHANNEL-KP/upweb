@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     // Create Outline Key
     const VPS_API_URL =
-      "https://premium.kpchannel.cc.cd:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys";
+      "https://premium.kpvpn.shop:56847/qHEeZdkH2_qrnRZkdRjwgQ/access-keys";
 
     const response = await fetch(VPS_API_URL, {
       method: "POST",
