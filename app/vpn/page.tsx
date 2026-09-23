@@ -13,7 +13,7 @@ export default function VPNFilesPage() {
   const [loading, setLoading] = useState(false);
 
   const vpnFiles = [
-    { nameMy: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', nameEn: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net)', url: '/vpnfiles/KP_ATOM_500MB_(Bill_Zero_=_Free_Net).npvs', speed: 'High Speed' },
+    { nameMy: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net) (2)', nameEn: 'KP_ATOM_500MB_(Bill_Zero_=_Free_Net) (2)', url: '/vpnfiles/KP_ATOM_500MB_(Bill_Zero_=_Free_Net)_=_2.npvs', speed: 'High Speed' },
   ];
 
   const handleVerify = async () => {
